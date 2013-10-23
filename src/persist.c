@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "persist.h"
 
 int main(void) {
-	puts("!!!Hello World!!!");
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
