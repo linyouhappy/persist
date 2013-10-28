@@ -16,12 +16,16 @@
 #include <unistd.h>
 
 #include <errno.h>
+#include <error.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 #include "queue.h"
 #include "thread.h"             //  线程 && 线程池
-#include "connection.h"         //  连接
+#include "socket.h"             //  连接
 
 #endif
