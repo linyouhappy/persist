@@ -1,10 +1,12 @@
-$include ./Makefile.def
-BIN = persist
-SRC = persist.c connection.c thread.c
-HEAD = persist.h connection.h queue.h thread.h
+include ./Makefile.def
 
-$(BIN: $(SRC) $(HEAD)
+all: test $(BIN)
+
+test:
+	echo $(SRC_PATH)
+
+$(BIN): $(SRC) $(HEAD)
 	gcc -o persist $(SRC) -lpthread
 
 clean:
-	rm -rf *.o $(BIN)
+	rm -f *.o $(BIN)

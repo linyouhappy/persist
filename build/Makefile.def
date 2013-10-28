@@ -1,1 +1,8 @@
-SERVER_PATH=../src
+SRC_PATH=../src
+BIN = persist
+FILES = persist connection thread
+SRC = $(addsuffix .c, $(addprefix $(SRC_PATH)/, $(FILES)))
+HEAD = $(addsuffix .h, $(addprefix $(SRC_PATH)/, $(FILES))) queue.h
+
+vpath %.c $(SRC_PATH)
+vpath %.h $(SRC_PATH)
