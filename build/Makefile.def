@@ -1,6 +1,6 @@
 SRC_PATH=../src
 BIN = persist
-FILES = persist connection thread
+FILES = persist thread socket
 SRC = $(addsuffix .c, $(addprefix $(SRC_PATH)/, $(FILES)))
 HEAD = $(addsuffix .h, $(addprefix $(SRC_PATH)/, $(FILES))) queue.h
 
