@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #include <sys/types.h>
+#include <sys/socket.h>
 
 #include "queue.h"
 #include "thread.h"             //  线程 && 线程池
