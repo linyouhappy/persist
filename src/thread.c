@@ -63,8 +63,8 @@ static void * thread_pool_worker(void * args) {
 
 thread_pool_p thread_pool_init(thread_pool_p old) {
     thread_pool_p pool;
+    pool = (thread_pool_p) malloc(sizeof(thread_pool_t));
     if (null == old) {
-        pool = (thread_pool_p) malloc(sizeof(thread_pool_t));
         pool->count      = thread_pool_count;
     } else {
         pool->count = old->count;

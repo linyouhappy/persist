@@ -15,7 +15,8 @@ static void thread_pool_demo() {
 }
 
 int main(void) {
-//    thread_pool_demo();
+    thread_pool_demo();
+    return 0;
 
     int fd;
 
