@@ -1,7 +1,7 @@
 #ifndef H_CONNECTION_INCLUDED
 #define H_CONNECTION_INCLUDED
 
-// TODO : 2 connection design
+// TODO : 1 connection design
 #include "persist.h"
 
 typedef struct connection_s             connection_t;
