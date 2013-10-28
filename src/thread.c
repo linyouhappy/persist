@@ -1,7 +1,7 @@
 #include "thread.h"
 
 static void * thread_pool_worker(void * args) {
-    thread_worker_p worker = (thread_worker_p)args;
+    thread_worker_p worker = (thread_worker_p) args;
     thread_pool_p   pool   = worker->pool;
     thread_task_p   task;
 
@@ -61,53 +61,56 @@ static void * thread_pool_worker(void * args) {
     return (void *)worker;
 }
 
-thread_pool_p thread_pool_init() {
-    thread_pool_p   p;
-    p = (thread_pool_p) malloc(sizeof(thread_pool_t));
-    return p;
+thread_pool_p thread_pool_init(thread_pool_p old) {
+    thread_pool_p pool;
+    pool = (thread_pool_p) malloc(sizeof(thread_pool_t));
+    if (null == old) {
+        pool->count      = thread_pool_count;
+    } else {
+        pool->count = old->count;
+    }
+    pool->min        = thread_pool_min;
+    pool->max        = thread_pool_max;
+    return pool;
 }
 
-thread_pool_p thread_pool_create(thread_pool_p pool) {
+thread_pool_p thread_pool_create(thread_pool_p old_pool) {
     int                 i;
     thread_worker_p     worker;
+    thread_pool_p       new_pool;
 
-    if (null == pool) {
-        thread_pool_p       pool;
-        pool           = thread_pool_init();
-        pool->num      = thread_pool_num;
-    }
-    pool->close    = false;
-    pool->task     = (thread_task_p) malloc(sizeof(thread_task_t));
-    queue_init(pool->task);
+    new_pool                = thread_pool_init(old_pool);
+    new_pool->close         = 0;
+    new_pool->task          = thread_task_init();
 
-    pool->cond     = (pthread_cond_t *)  malloc(sizeof(pthread_cond_t));
-    pool->mutex    = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-    pool->task_last_id  = 0;
+    new_pool->cond          = (pthread_cond_t *)  malloc(sizeof(pthread_cond_t));
+    new_pool->mutex         = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    new_pool->task_last_id  = 0;
 
-    if (pthread_cond_init(pool->cond, NULL) != 0) {
+    if (pthread_cond_init(new_pool->cond, NULL) != 0) {
         printf("%s: pthread_cond_init failed, errno:%d, error:%s\n",
                 __FUNCTION__, errno, strerror(errno));
         exit(1);
     }
 
-    if (pthread_mutex_init(pool->mutex, NULL) != 0) {
+    if (pthread_mutex_init(new_pool->mutex, NULL) != 0) {
         printf("%s: pthread_mutex_init failed, errno:%d, error:%s\n",
                 __FUNCTION__, errno, strerror(errno));
         exit(1);
     }
 
-    pool->workers  = (thread_worker_p) malloc(pool->num * sizeof(thread_worker_t));
+    new_pool->workers  = (thread_worker_p) malloc(new_pool->count * sizeof(thread_worker_t));
 
-    for(i=0; i<pool->num; i++) {
-        worker = pool->workers + i;
+    for(i=0; i<new_pool->count; i++) {
+        worker = new_pool->workers + i;
         worker->id = i;
-        worker->pool    = pool;
+        worker->pool    = new_pool;
         worker->task    = null;
 
         pthread_create(&worker->thread, NULL, &thread_pool_worker, worker);
     }
 
-    return pool;
+    return new_pool;
 }
 
 int thread_pool_destroy(thread_pool_p pool) {
@@ -123,7 +126,7 @@ int thread_pool_destroy(thread_pool_p pool) {
     pthread_cond_broadcast(pool->cond);  //  广播信号
     pthread_mutex_unlock(pool->mutex);
 
-    for(i=0; i<pool->num; i++) {
+    for(i=0; i<pool->count; i++) {
         r = pthread_join((pool->workers + i)->thread, NULL);
         if (0 != r) {
             perror("pthread_join:");
@@ -136,10 +139,16 @@ int thread_pool_destroy(thread_pool_p pool) {
     return EXIT_SUCCESS;
 }
 
+thread_task_p thread_task_init() {
+    thread_task_p task = (thread_task_p) malloc(sizeof(thread_task_t));
+    queue_init(task);
+    return task;
+}
+
 int thread_task_add(thread_pool_t * pool, thread_worker_process process, void * args) {
     thread_task_p task;
 
-    task = (thread_task_p)malloc(sizeof(thread_task_t));
+    task = malloc(sizeof(thread_task_t));
     task->process = process;
     task->args    = args;
     task->id      = pool->task_last_id++;
