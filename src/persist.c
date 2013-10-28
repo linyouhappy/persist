@@ -8,12 +8,8 @@ static void * my_process(void * args, thread_worker_p worker) {
 
 int main(void) {
     thread_pool_p pool;
-    pool = malloc(sizeof(thread_pool_t));
-    pool->num = 2;
-
-    pool = thread_pool_create(pool);
+    pool = thread_pool_create(null);
     thread_task_add(pool, my_process, NULL);
-    sleep(5);
     thread_pool_destroy(pool);
     return EXIT_SUCCESS;
 }
