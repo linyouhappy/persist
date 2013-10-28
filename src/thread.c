@@ -1,7 +1,7 @@
 #include "thread.h"
 
 static void * thread_pool_worker(void * args) {
-    thread_worker_p worker = args;
+    thread_worker_p worker = (thread_worker_p)args;
     thread_pool_p   pool   = worker->pool;
     thread_task_p   task;
 
@@ -139,7 +139,7 @@ int thread_pool_destroy(thread_pool_p pool) {
 int thread_task_add(thread_pool_t * pool, thread_worker_process process, void * args) {
     thread_task_p task;
 
-    task = malloc(sizeof(thread_task_t));
+    task = (thread_task_p)malloc(sizeof(thread_task_t));
     task->process = process;
     task->args    = args;
     task->id      = pool->task_last_id++;
