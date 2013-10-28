@@ -1,7 +1,7 @@
 #include "thread.h"
 
 static void * thread_pool_worker(void * args) {
-    thread_worker_p worker = args;
+    thread_worker_p worker = (thread_worker_p) args;
     thread_pool_p   pool   = worker->pool;
     thread_task_p   task;
 
