@@ -14,12 +14,17 @@
 //    thread_pool_destroy(pool);
 //}
 
+void process(connection_p connection) {
+    printf("client:%d  !\n", connection->fd);
+}
+
 int main(void) {
     listening_p  listen;
-    connection_p connection;
     listen = server_tcp_create(16622, null);
 
-    connection = server_tcp_accept(listen);
+    listen->process = process;
+
+    server_tcp_process(listen);
 
     printf("success\n");
 

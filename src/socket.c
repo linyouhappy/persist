@@ -7,6 +7,8 @@ listening_p server_tcp_create(uint16_t port, char * ip) {
     listening = (listening_p) malloc(sizeof(listening_t));
     memset(listening, 0, sizeof(listening_t));
 
+    listening->process = null;
+
     listening->socklen = sizeof(struct sockaddr);
     sockaddr = (struct sockaddr_in *) &listening->sockaddr;
 
@@ -46,4 +48,16 @@ connection_p server_tcp_accept(listening_p listen) {
     connection->fd = accept(listen->fd, (struct sockaddr *)&connection->sockaddr, &connection->socklen);
 
     return connection;
+}
+
+void server_tcp_process(listening_p listen) {
+    connection_p connection;
+
+    while(true) {
+        connection = server_tcp_accept(listen);
+
+        if (listen->process) {
+            listen->process(connection);
+        }
+    }
 }
