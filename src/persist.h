@@ -10,6 +10,9 @@
 #define SUCCESS         EXIT_SUCCESS
 #define FAILED          EXIT_FAILED
 
+#define success         SUCCESS
+#define failed          FAILED
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

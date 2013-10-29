@@ -26,7 +26,5 @@ int main(void) {
 
     server_tcp_process(listen);
 
-    printf("success\n");
-
     return EXIT_SUCCESS;
 }
