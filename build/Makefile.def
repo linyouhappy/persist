@@ -1,4 +1,5 @@
 SRC_PATH=../src
+
 BIN = persist
 FILES = persist thread socket
 SRC = $(addsuffix .c, $(addprefix $(SRC_PATH)/, $(FILES)))
