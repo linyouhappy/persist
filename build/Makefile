@@ -3,10 +3,10 @@ include ./Makefile.def
 all: test $(BIN)
 
 test:
-	echo $(SRC_PATH)
+	echo $(CFLAGS)
 
 $(BIN): $(SRC) $(HEAD)
-	gcc -o persist $(SRC) -lpthread $(CFLAGS)
+	gcc -o persist $(SRC) -lpthread $(CFLAGS) -I$(SRC_PATH)
 
 clean:
 	rm -f *.o $(BIN)

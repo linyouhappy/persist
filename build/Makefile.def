@@ -4,7 +4,7 @@ OS=$(shell uname -s)
 ifeq ("$(OS)", "Linux")
     CFLAGS+=-D__IS_LINUX__
 else
-    CFLAGS+=-D__IS_LINUX__
+    CFLAGS+=-U__IS_LINUX__
 endif
 
 

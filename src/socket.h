@@ -19,7 +19,7 @@ typedef connection_t *                  connection_p;
 typedef struct server_event_s           server_event_t;
 typedef server_event_t *                server_event_p;
 
-typedef void (*connection_process)(connection_p);
+typedef void (*connection_process_pt)(connection_p);
 
 struct server_event_s {
     int     type;
@@ -31,7 +31,7 @@ struct listening_s {
     int                    fd;
     struct sockaddr        sockaddr;
     socklen_t              socklen;
-    connection_process     process;
+    connection_process_pt     process;
 };
 
 //  conn
@@ -39,6 +39,7 @@ struct connection_s {
     int                    fd;
     struct sockaddr        sockaddr;
     socklen_t              socklen;
+
     void *                 read;
     void *                 write;
 };

@@ -2,7 +2,6 @@
 #define H_EVENT_INCLUDED
 
 #include "persist.h"
-#include "socket.h"
 
 typedef struct event_s                  event_t;
 typedef event_t *                       event_p;
@@ -13,6 +12,11 @@ typedef event_module_t                  event_module_p;
 
 typedef struct event_actions_s          event_actions_t;
 typedef event_actions_t *               event_actions_p;
+
+typedef void (*event_process_pt)(event_p ev);
+
+//KQUEUE
+#include "kqueue.h"
 
 struct event_s {
     int                                 index;
@@ -27,6 +31,8 @@ struct event_s {
     unsigned                            disabled:1;
 
     unsigned                            closed:1;
+
+    event_process_pt                    process;
 
     event_p                             next;
     event_pp                            prev;
@@ -57,5 +63,4 @@ struct event_module_s {
 
 extern event_actions_t   event_actions;
 
-#include "kqueue.h"
 #endif

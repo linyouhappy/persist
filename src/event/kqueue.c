@@ -36,7 +36,7 @@ kqueue_init() {
     events  = malloc(nevents * sizeof(kevent_t));
     changes = malloc(nevents * sizeof(kevent_t));
 
-    event_actions = event_module_kqueue.actions;
+//    event_actions = event_module_kqueue.actions;
 
     nchanges = 0;
     return success;
@@ -44,8 +44,10 @@ kqueue_init() {
 
 int
 kqueue_process_events(){
-    int ret, i;
-    connection_p c;
+    int          ret, i;
+    event_p      ev, re, wr;
+    kevent_p     ke;
+    connection_p cn;
 
 //    EV_SET(&changes, 3, EVFILT_READ, EV_ADD, 0, 0, NULL);
 //    ret = kevent(kq, changes, 1, NULL, 0, NULL);
@@ -53,32 +55,39 @@ kqueue_process_events(){
     for(;;) {
         printf("wait\n");
         ret= kevent(kq, null, 0, events, nevents, NULL);
-        printf("%d\n", ret);
         if (-1 == ret) {
             printf("kevent() failed!%s\n", strerror(errno));
             exit(0);
         }
+        int client;
 
+        printf("count:%d\n", ret);
         for(i=0; i<ret; i++) {
-            printf("id:%ld\n", events[i].ident);
-            c = events[i].data;
+            ke = (kevent_p) &events[i];
+            ev = (event_p)  ke->udata;
+            cn = (connection_p) ev->data;
 
+            switch(ke->filter) {
+            case EVFILT_READ:
+                printf("%d:read\n", cn->fd);
+                client = accept(cn->fd, NULL, NULL);
 
-
-
-//            if (listen->fd == events[i].ident) {
-//                // accept
-//                for (int i = 0; i < events[i].data; i++) {
-//                    int client = accept(listen->fd, NULL, NULL);
-//                    printf("client:%d\n", client);
-//                    if (client == -1) {
-//                        continue;
-//                    }
-//                    close(client);
+                printf("client:%d\n", client);
+                printf("%s\n", "success");
+//                re = (event_p) cn->read;
+//                if (re->process) {
+//                    re->process(ev);
 //                }
-//            } else {
-//                // client
-//            }
+                break;
+            case EVFILT_WRITE:
+                printf("%d:write\n", cn->fd);
+                exit(1);
+//                wr = (event_p) cn->write;
+//                if (wr->process) {
+//                    wr->process(ev);
+//                }
+                break;
+            }
         }
     }
     return success;
@@ -105,16 +114,23 @@ kqueue_del_event(event_p ev, int event, int flags) {
     ev->active   = 0;
     ev->disabled = 1;
 
-    ret = kqueue_ev_set(ev, event, EV_DELETE | EV_DELETE | flags);
+    ret = kqueue_ev_set(ev, event, EV_DELETE | EV_DISABLE | flags);
     return ret;
 }
 
 int
 kqueue_ev_set(event_t *ev, int filter, int flags) {
-    connection_t  *c;
+    connection_p   c;
+    kevent_p       ke;
     c = ev->data;
 
-    EV_SET(changes+(nchanges-1), c->fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    ke = changes + (nchanges-1);
+    ke->ident = c->fd;
+    ke->filter = filter;
+    ke->flags  = flags;
+    ke->fflags = 0;
+    ke->data   = 0;
+    ke->udata  = ev;
 
     if (-1 == (kevent(kq, changes, nchanges, NULL, 0, NULL))) {
         printf("kevent() failed!(%s)\n", strerror(errno));

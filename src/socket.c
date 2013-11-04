@@ -65,7 +65,17 @@ void server_tcp_process(listening_p listen) {
     ret = kqueue_init();
 
     ret = kqueue_add_event(&ev, EVFILT_READ, 0);
+    if(-1 == ret) {
+        printf("error\n");
+    }
+    ret = kqueue_add_event(&ev, EVFILT_WRITE, 0);
+    if(-1 == ret) {
+        printf("error\n");
+    }
     ret = kqueue_process_events();
+    if(-1 == ret) {
+        printf("error\n");
+    }
 
 //    int kq, ret, i;
 //    struct kevent * changes;
