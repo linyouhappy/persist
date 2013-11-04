@@ -4,7 +4,8 @@
 // TODO : 1 connection design
 #include "persist.h"
 
-#include <sys/epoll.h>
+//#include <sys/epoll.h>
+#include <sys/event.h>
 
 #define EVENT_TYPE_LISTENING            1
 #define EVENT_TYPE_CONNECTION           2
@@ -48,6 +49,6 @@ void server_tcp_process(listening_p);
 connection_p server_tcp_accept(listening_p);
 
 //  event poll
-int epoll_add_event(int efd, int fd, struct epoll_event *);
-int epoll_del_event(int efd, int fd, struct epoll_event *);
+//int epoll_add_event(int efd, int fd, struct epoll_event *);
+//int epoll_del_event(int efd, int fd, struct epoll_event *);
 #endif

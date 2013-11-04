@@ -51,46 +51,116 @@ connection_p server_tcp_accept(listening_p listen) {
 }
 
 void server_tcp_process(listening_p listen) {
-    int                efd, num, n, i;
-    struct epoll_event ee, *events;
-    server_event_p     se;
-    listening_p        listening;
-    connection_p       connection;
+    //kqueue
+    int ret;
 
-    num = 10;
+    event_t      ev;
+    connection_t con;
 
-    if (-1 == (efd = epoll_create(num))) {
-        printf("epoll_create failed!(%s)", strerror(errno));
-        exit(1);
-    }
+    con.fd = listen->fd;
+    con.sockaddr = listen->sockaddr;
+    con.socklen  = listen->socklen;
 
-    se = malloc(sizeof(server_event_t));
-    se->type = EVENT_TYPE_LISTENING;
-    se->ptr  = listen;
+    ev.data = &con;
+    ret = kqueue_init();
 
-    ee.data.ptr = (void *)se;
-    ee.events   = 0;
-    epoll_add_event(efd, listen->fd, &ee);
+    ret = kqueue_add_event(&ev, EVFILT_READ, 0);
+    ret = kqueue_process_events();
 
-    events = (struct epoll_event *) malloc(num * sizeof(struct epoll_event));
+//    int kq, ret, i;
+//    struct kevent * changes;
+//
+//    changes = (struct kevent *) malloc(sizeof(struct kevent));
+//
+//    struct kevent events[10];
+//
+//    kq = kqueue();
+//    EV_SET(&changes[0], listen->fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+//
+//    ret = kevent(kq, changes, 1, NULL, 0, NULL);
+//
+//    if (-1 == ret) {
+//        printf("kevent failed!%s\n", strerror(errno));
+//        exit(1);
+//    }
+//
+//
+//    EV_SET(&changes[1], 2, EVFILT_READ, EV_ADD, 0, 0, NULL);
+//    ret = kevent(kq, changes, 2, NULL, 0, NULL);
+//
+//    close(2);
+//    if (-1 == ret) {
+//        printf("kevent failed!%s\n", strerror(errno));
+//        exit(1);
+//    }
+//
+//    printf("%s\n", "success");
+////    printf("ready!\n");
+//    while(true) {
+//        ret= kevent(kq, null, 0, events, 10, NULL);
+//        if (-1 == ret) {
+//            printf("kevent(w) failed!%s\n", strerror(errno));
+//        }
+//
+//        for(i=0; i<ret; i++) {
+//            printf("id:%ld\n", events[i].ident);
+//
+//            if (listen->fd == events[i].ident) {
+//                // accept
+//                for (int i = 0; i < events[i].data; i++) {
+//                    int client = accept(listen->fd, NULL, NULL);
+//                    printf("client:%d\n", client);
+//                    if (client == -1) {
+//                        continue;
+//                    }
+//                }
+//            } else {
+//                // client
+//            }
+//        }
+//    }
 
-    n = epoll_wait(efd, events, num, -1);
-
-    for(i=0; i<num; i++) {
-        se = (server_event_p) events[i].data.ptr;
-
-        switch(se->type) {
-        case EVENT_TYPE_LISTENING:
-            listening = se->ptr;
-            connection = server_tcp_accept(listen);
-            if (listening->process) {
-                listening->process(connection);
-            }
-            break;
-        case EVENT_TYPE_CONNECTION:
-            break;
-        }
-    }
+    //epoll
+//    int                efd, num, n, i;
+//    struct epoll_event ee, *events;
+//    server_event_p     se;
+//    listening_p        listening;
+//    connection_p       connection;
+//
+//    num = 10;
+//
+//    if (-1 == (efd = epoll_create(num))) {
+//        printf("epoll_create failed!(%s)", strerror(errno));
+//        exit(1);
+//    }
+//
+//    se = malloc(sizeof(server_event_t));
+//    se->type = EVENT_TYPE_LISTENING;
+//    se->ptr  = listen;
+//
+//    ee.data.ptr = (void *)se;
+//    ee.events   = 0;
+//    epoll_add_event(efd, listen->fd, &ee);
+//
+//    events = (struct epoll_event *) malloc(num * sizeof(struct epoll_event));
+//
+//    n = epoll_wait(efd, events, num, -1);
+//
+//    for(i=0; i<num; i++) {
+//        se = (server_event_p) events[i].data.ptr;
+//
+//        switch(se->type) {
+//        case EVENT_TYPE_LISTENING:
+//            listening = se->ptr;
+//            connection = server_tcp_accept(listen);
+//            if (listening->process) {
+//                listening->process(connection);
+//            }
+//            break;
+//        case EVENT_TYPE_CONNECTION:
+//            break;
+//        }
+//    }
 
 //    while(true) {
 //        connection = server_tcp_accept(listen);
@@ -100,30 +170,30 @@ void server_tcp_process(listening_p listen) {
 //    }
 }
 
-int epoll_add_event(int efd, int fd, struct epoll_event *event) {
-    struct epoll_event   ee;
+//int epoll_add_event(int efd, int fd, struct epoll_event *event) {
+//    struct epoll_event   ee;
+//
+//    ee.data.ptr = event->data.ptr;
+//    ee.events   = EPOLLIN | EPOLLOUT | event->events;
+//
+//    if (success != epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)) {
+//        printf("epoll_ctl failed!(%s)\n", strerror(errno));
+//        exit(1);
+//    }
+//
+//    return success;
+//}
 
-    ee.data.ptr = event->data.ptr;
-    ee.events   = EPOLLIN | EPOLLOUT | event->events;
+//int epoll_del_event(int efd, int fd, struct epoll_event *event) {
+//    struct epoll_event   ee;
+//
+//    ee.data.ptr = event->data.ptr;
+//    ee.events  = EPOLLIN | EPOLLOUT | event->events;
+//
+//    if (success != epoll_ctl(efd, EPOLL_CTL_DEL, fd, &ee)) {
+//        printf("epoll_ctl failed!(%s)\n", strerror(errno));
+//        exit(1);
+//    }
 
-    if (success != epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)) {
-        printf("epoll_ctl failed!(%s)\n", strerror(errno));
-        exit(1);
-    }
-
-    return success;
-}
-
-int epoll_del_event(int efd, int fd, struct epoll_event *event) {
-    struct epoll_event   ee;
-
-    ee.data.ptr = event->data.ptr;
-    ee.events  = EPOLLIN | EPOLLOUT | event->events;
-
-    if (success != epoll_ctl(efd, EPOLL_CTL_DEL, fd, &ee)) {
-        printf("epoll_ctl failed!(%s)\n", strerror(errno));
-        exit(1);
-    }
-
-    return success;
-}
+//    return success;
+//}
