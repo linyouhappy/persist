@@ -1,7 +1,7 @@
 #ifndef H_KQUEUE_INCLUDED
 #define H_KQUEUE_INCLUDED
 
-#include "event.h"
+#include "persist.h"
 
  #include <sys/types.h>
  #include <sys/event.h>

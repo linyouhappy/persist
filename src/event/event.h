@@ -1,11 +1,11 @@
 #ifndef H_EVENT_INCLUDED
 #define H_EVENT_INCLUDED
 
-#include "persist.h"
-
 typedef struct event_s                  event_t;
 typedef event_t *                       event_p;
 typedef event_p *                       event_pp;
+
+typedef void (*event_process_pt)(event_p ev);
 
 typedef struct event_module_s           event_module_t;
 typedef event_module_t                  event_module_p;
@@ -13,7 +13,6 @@ typedef event_module_t                  event_module_p;
 typedef struct event_actions_s          event_actions_t;
 typedef event_actions_t *               event_actions_p;
 
-typedef void (*event_process_pt)(event_p ev);
 
 // KQUEUE
 #define NGX_READ_EVENT     EVFILT_READ
@@ -27,7 +26,7 @@ typedef void (*event_process_pt)(event_p ev);
 #define NGX_DISABLE_EVENT  EV_DISABLE
 
 //KQUEUE
-#include "kqueue.h"
+#include "event/kqueue.h"
 
 struct event_s {
     int                                 index;
@@ -45,8 +44,8 @@ struct event_s {
 
     event_process_pt                    process;
 
-    event_p                             next;
-    event_pp                            prev;
+//    event_p                             next;
+//    event_pp                            prev;
 };
 
 
@@ -56,9 +55,6 @@ struct event_actions_s {
 
     int   (*enable)(event_p ev, int event, int flags);
     int   (*disable)(event_p ev, int event, int flags);
-
-    int   (*add_conn)(connection_t *c);
-    int   (*del_conn)(connection_t *c, int flags);
 
     int   (*process_changes)();
     int   (*process_events)();

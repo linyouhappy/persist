@@ -1,4 +1,4 @@
-#include "kqueue.h"
+#include "persist.h"
 
 static int kq = -1;
 static kevent_p  changes;
@@ -14,33 +14,10 @@ event_module_t event_module_kqueue = {
          kqueue_del_event,
          NULL,
          NULL,
-         NULL,
-         NULL,
          kqueue_init,
          null
      }
 };
-
-
-void server_tcp_accept(event_p ev) {
-//connection_p server_tcp_accept(listening_p listen) {
-    listening_p          ls;
-    connection_p         lc, c;
-    lc = ev->data;
-    ls = lc->listening;
-
-    c = (connection_p) malloc(sizeof(connection_t));
-    memset(c, 0, sizeof(connection_t));
-
-    c->socklen  = sizeof(struct sockaddr_in);
-
-    c->fd = accept(ls->fd, (struct sockaddr *)&c->sockaddr, &c->socklen);
-
-    printf("client:(%d) init!\n", c->fd);
-    close(c->fd);
-    printf("client:(%d) close!\n", c->fd);
-
-}
 
 int
 kqueue_init() {
@@ -65,7 +42,7 @@ kqueue_init() {
 
 int
 kqueue_process_events(){
-    int          ret, i;
+    int          ret, i, n;
     event_p      ev, re, wr;
     kevent_p     ke;
     connection_p cn;
@@ -86,10 +63,14 @@ kqueue_process_events(){
             ke = (kevent_p) &events[i];
             ev = (event_p)  ke->udata;
             cn = (connection_p) ev->data;
+            n  = ke->data;
+
+            printf("n:%d\n", n);
 
             switch(ke->filter) {
             case EVFILT_READ:
                 re = (event_p) cn->read;
+
                 if (re->process) {
                     re->process(ev);
                 }
@@ -118,7 +99,9 @@ kqueue_add_event(event_p ev, int event, int flags) {
 
     nchanges++;
 
-    ret = kqueue_ev_set(ev, event, EV_ADD | EV_ENABLE | flags);
+    printf("nchanges:%d\n", nchanges);
+
+    ret = kqueue_ev_set(ev, event, EV_ADD | flags);
     return ret;
 }
 
@@ -129,7 +112,7 @@ kqueue_del_event(event_p ev, int event, int flags) {
     ev->active   = 0;
     ev->disabled = 1;
 
-    ret = kqueue_ev_set(ev, event, EV_DELETE | EV_DISABLE | flags);
+    ret = kqueue_ev_set(ev, event, EV_DELETE | flags);
     return ret;
 }
 
@@ -140,7 +123,7 @@ kqueue_ev_set(event_t *ev, int filter, int flags) {
     c = (connection_p) ev->data;
 
     ke = changes + (nchanges-1);
-    ke->ident = 3;
+    ke->ident  = c->fd;
     ke->filter = filter;
     ke->flags  = flags;
     ke->fflags = 0;

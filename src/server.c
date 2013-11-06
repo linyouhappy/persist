@@ -1,24 +1,25 @@
-#include "persist.h"
+#include "server.h"
 
 //  创建服务器
-listening_p server_tcp_create(uint16_t port, char * ip) {
+int server_tcp_create(server_p server) {
+//    listening_p server_tcp_create(uint16_t port, char * ip) {
     listening_p  listening;
     connection_p connection;
-    event_p      read, write;
+    event_p      read /*, write */;
     int          ret;
     struct sockaddr_in * sockaddr;
 
     listening = (listening_p) malloc(sizeof(listening_t));
     memset(listening, 0, sizeof(listening_t));
 
-    listening->process = null;
+//    listening->process = null;
 
     listening->socklen = sizeof(struct sockaddr);
     sockaddr = (struct sockaddr_in *) &listening->sockaddr;
 
     sockaddr->sin_family = AF_INET;
-    sockaddr->sin_port   = htons(port);
-    if (null == ip) {
+    sockaddr->sin_port   = htons(server->port);
+    if (null == server->ip) {
         sockaddr->sin_addr.s_addr = htonl(INADDR_ANY);
     }
 
@@ -32,6 +33,9 @@ listening_p server_tcp_create(uint16_t port, char * ip) {
     if (-1 == listen(listening->fd, 10)) {
         printf("listen failed!\n");
     }
+
+    server_read  = server->read;
+    server_write = server->write;
 
     //  事件初始化
     event_init();
@@ -48,7 +52,7 @@ listening_p server_tcp_create(uint16_t port, char * ip) {
 
     read = connection->read;
     read->data    = connection;
-    read->process = server_tcp_accept;
+    read->process = server->accept;
 
 
     ret = event_actions.add(read, EVFILT_READ, 0);
@@ -58,11 +62,11 @@ listening_p server_tcp_create(uint16_t port, char * ip) {
         exit(1);
     }
 
-    printf("server create true!\n");
-    return listening;
+    printf("server create success!\n");
+    return success;
 }
 
-void server_tcp_process(listening_p listen) {
+int server_tcp_process() {
     //kqueue
     int ret;
 
@@ -70,6 +74,8 @@ void server_tcp_process(listening_p listen) {
     if(-1 == ret) {
         printf("error\n");
     }
+
+    return success;
 
     //epoll
 //    int                efd, num, n, i;
@@ -120,31 +126,3 @@ void server_tcp_process(listening_p listen) {
 //        }
 //    }
 }
-
-//int epoll_add_event(int efd, int fd, struct epoll_event *event) {
-//    struct epoll_event   ee;
-//
-//    ee.data.ptr = event->data.ptr;
-//    ee.events   = EPOLLIN | EPOLLOUT | event->events;
-//
-//    if (success != epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)) {
-//        printf("epoll_ctl failed!(%s)\n", strerror(errno));
-//        exit(1);
-//    }
-//
-//    return success;
-//}
-
-//int epoll_del_event(int efd, int fd, struct epoll_event *event) {
-//    struct epoll_event   ee;
-//
-//    ee.data.ptr = event->data.ptr;
-//    ee.events  = EPOLLIN | EPOLLOUT | event->events;
-//
-//    if (success != epoll_ctl(efd, EPOLL_CTL_DEL, fd, &ee)) {
-//        printf("epoll_ctl failed!(%s)\n", strerror(errno));
-//        exit(1);
-//    }
-
-//    return success;
-//}
