@@ -21,6 +21,7 @@ struct kevent {
 typedef struct kevent           kevent_t;
 typedef kevent_t *              kevent_p;
 
+void server_tcp_accept(event_p ev);
 
 int kqueue_init();
 int kqueue_add_event(event_p ev, int event, int flags);

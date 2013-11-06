@@ -15,6 +15,17 @@ typedef event_actions_t *               event_actions_p;
 
 typedef void (*event_process_pt)(event_p ev);
 
+// KQUEUE
+#define NGX_READ_EVENT     EVFILT_READ
+#define NGX_WRITE_EVENT    EVFILT_WRITE
+#define NGX_VNODE_EVENT    EVFILT_VNODE
+#define NGX_CLOSE_EVENT    EV_EOF
+#define NGX_LOWAT_EVENT    EV_FLAG1
+#define NGX_FLUSH_EVENT    EV_ERROR
+#define NGX_ONESHOT_EVENT  EV_ONESHOT
+#define NGX_CLEAR_EVENT    EV_CLEAR
+#define NGX_DISABLE_EVENT  EV_DISABLE
+
 //KQUEUE
 #include "kqueue.h"
 
@@ -62,5 +73,7 @@ struct event_module_s {
 };
 
 extern event_actions_t   event_actions;
+
+int event_init();
 
 #endif

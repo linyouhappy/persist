@@ -3,7 +3,6 @@
 
 // TODO : 1 connection design
 #include "persist.h"
-
 //#include <sys/epoll.h>
 #include <sys/event.h>
 
@@ -28,9 +27,10 @@ struct server_event_s {
 
 //  listen
 struct listening_s {
-    int                    fd;
-    struct sockaddr        sockaddr;
-    socklen_t              socklen;
+    int                       fd;
+    struct sockaddr           sockaddr;
+    socklen_t                 socklen;
+    connection_p              connection;
     connection_process_pt     process;
 };
 
@@ -40,6 +40,8 @@ struct connection_s {
     struct sockaddr        sockaddr;
     socklen_t              socklen;
 
+    listening_p            listening;
+
     void *                 read;
     void *                 write;
 };
@@ -47,8 +49,8 @@ struct connection_s {
 
 listening_p server_tcp_create(uint16_t, char *);
 void server_tcp_process(listening_p);
-connection_p server_tcp_accept(listening_p);
-
+//connection_p server_tcp_accept(listening_p);
+//void server_tcp_accept(event_p ev);
 //  event poll
 //int epoll_add_event(int efd, int fd, struct epoll_event *);
 //int epoll_del_event(int efd, int fd, struct epoll_event *);

@@ -21,6 +21,27 @@ event_module_t event_module_kqueue = {
      }
 };
 
+
+void server_tcp_accept(event_p ev) {
+//connection_p server_tcp_accept(listening_p listen) {
+    listening_p          ls;
+    connection_p         lc, c;
+    lc = ev->data;
+    ls = lc->listening;
+
+    c = (connection_p) malloc(sizeof(connection_t));
+    memset(c, 0, sizeof(connection_t));
+
+    c->socklen  = sizeof(struct sockaddr_in);
+
+    c->fd = accept(ls->fd, (struct sockaddr *)&c->sockaddr, &c->socklen);
+
+    printf("client:(%d) init!\n", c->fd);
+    close(c->fd);
+    printf("client:(%d) close!\n", c->fd);
+
+}
+
 int
 kqueue_init() {
     if (-1 == kq) {
@@ -33,10 +54,10 @@ kqueue_init() {
     }
 
     //  事件列表
-    events  = malloc(nevents * sizeof(kevent_t));
-    changes = malloc(nevents * sizeof(kevent_t));
+    events  = (kevent_p) malloc(nevents * sizeof(kevent_t));
+    changes = (kevent_p) malloc(nevents * sizeof(kevent_t));
 
-//    event_actions = event_module_kqueue.actions;
+    event_actions = event_module_kqueue.actions;
 
     nchanges = 0;
     return success;
@@ -59,7 +80,6 @@ kqueue_process_events(){
             printf("kevent() failed!%s\n", strerror(errno));
             exit(0);
         }
-        int client;
 
         printf("count:%d\n", ret);
         for(i=0; i<ret; i++) {
@@ -69,23 +89,18 @@ kqueue_process_events(){
 
             switch(ke->filter) {
             case EVFILT_READ:
-                printf("%d:read\n", cn->fd);
-                client = accept(cn->fd, NULL, NULL);
-
-                printf("client:%d\n", client);
-                printf("%s\n", "success");
-//                re = (event_p) cn->read;
-//                if (re->process) {
-//                    re->process(ev);
-//                }
+                re = (event_p) cn->read;
+                if (re->process) {
+                    re->process(ev);
+                }
                 break;
             case EVFILT_WRITE:
                 printf("%d:write\n", cn->fd);
                 exit(1);
-//                wr = (event_p) cn->write;
-//                if (wr->process) {
-//                    wr->process(ev);
-//                }
+                wr = (event_p) cn->write;
+                if (wr->process) {
+                    wr->process(ev);
+                }
                 break;
             }
         }
@@ -122,10 +137,10 @@ int
 kqueue_ev_set(event_t *ev, int filter, int flags) {
     connection_p   c;
     kevent_p       ke;
-    c = ev->data;
+    c = (connection_p) ev->data;
 
     ke = changes + (nchanges-1);
-    ke->ident = c->fd;
+    ke->ident = 3;
     ke->filter = filter;
     ke->flags  = flags;
     ke->fflags = 0;

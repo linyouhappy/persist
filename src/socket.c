@@ -1,7 +1,11 @@
 #include "persist.h"
 
+//  创建服务器
 listening_p server_tcp_create(uint16_t port, char * ip) {
-    listening_p listening;
+    listening_p  listening;
+    connection_p connection;
+    event_p      read, write;
+    int          ret;
     struct sockaddr_in * sockaddr;
 
     listening = (listening_p) malloc(sizeof(listening_t));
@@ -29,106 +33,43 @@ listening_p server_tcp_create(uint16_t port, char * ip) {
         printf("listen failed!\n");
     }
 
+    //  事件初始化
+    event_init();
+
+    connection = (connection_p) malloc(sizeof(connection_t));
+
+    connection->fd = listening->fd;
+
+    connection->listening = listening;
+    listening->connection = connection;
+
+    connection->read  = malloc(sizeof(event_t));
+    connection->write = malloc(sizeof(event_t));
+
+    read = connection->read;
+    read->data    = connection;
+    read->process = server_tcp_accept;
+
+
+    ret = event_actions.add(read, EVFILT_READ, 0);
+
+    if (-1 == ret) {
+        printf("kqueue_add_event failed ! (%s)\n", strerror(errno));
+        exit(1);
+    }
+
     printf("server create true!\n");
     return listening;
-}
-
-connection_p server_tcp_accept(listening_p listen) {
-    int                  socklen;
-    struct sockaddr_in * sockaddr;
-    socklen  = sizeof(struct sockaddr_in);
-    sockaddr = (struct sockaddr_in *) malloc(socklen);
-
-    connection_p connection;
-    connection = (connection_p) malloc(sizeof(connection_t));
-    memset(connection, 0, sizeof(listening_t));
-
-    connection->socklen  = sizeof(struct sockaddr_in);
-
-    connection->fd = accept(listen->fd, (struct sockaddr *)&connection->sockaddr, &connection->socklen);
-
-    return connection;
 }
 
 void server_tcp_process(listening_p listen) {
     //kqueue
     int ret;
 
-    event_t      ev;
-    connection_t con;
-
-    con.fd = listen->fd;
-    con.sockaddr = listen->sockaddr;
-    con.socklen  = listen->socklen;
-
-    ev.data = &con;
-    ret = kqueue_init();
-
-    ret = kqueue_add_event(&ev, EVFILT_READ, 0);
-    if(-1 == ret) {
-        printf("error\n");
-    }
-    ret = kqueue_add_event(&ev, EVFILT_WRITE, 0);
-    if(-1 == ret) {
-        printf("error\n");
-    }
     ret = kqueue_process_events();
     if(-1 == ret) {
         printf("error\n");
     }
-
-//    int kq, ret, i;
-//    struct kevent * changes;
-//
-//    changes = (struct kevent *) malloc(sizeof(struct kevent));
-//
-//    struct kevent events[10];
-//
-//    kq = kqueue();
-//    EV_SET(&changes[0], listen->fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-//
-//    ret = kevent(kq, changes, 1, NULL, 0, NULL);
-//
-//    if (-1 == ret) {
-//        printf("kevent failed!%s\n", strerror(errno));
-//        exit(1);
-//    }
-//
-//
-//    EV_SET(&changes[1], 2, EVFILT_READ, EV_ADD, 0, 0, NULL);
-//    ret = kevent(kq, changes, 2, NULL, 0, NULL);
-//
-//    close(2);
-//    if (-1 == ret) {
-//        printf("kevent failed!%s\n", strerror(errno));
-//        exit(1);
-//    }
-//
-//    printf("%s\n", "success");
-////    printf("ready!\n");
-//    while(true) {
-//        ret= kevent(kq, null, 0, events, 10, NULL);
-//        if (-1 == ret) {
-//            printf("kevent(w) failed!%s\n", strerror(errno));
-//        }
-//
-//        for(i=0; i<ret; i++) {
-//            printf("id:%ld\n", events[i].ident);
-//
-//            if (listen->fd == events[i].ident) {
-//                // accept
-//                for (int i = 0; i < events[i].data; i++) {
-//                    int client = accept(listen->fd, NULL, NULL);
-//                    printf("client:%d\n", client);
-//                    if (client == -1) {
-//                        continue;
-//                    }
-//                }
-//            } else {
-//                // client
-//            }
-//        }
-//    }
 
     //epoll
 //    int                efd, num, n, i;
