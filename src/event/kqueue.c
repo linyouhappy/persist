@@ -51,35 +51,29 @@ kqueue_process_events(){
 //    ret = kevent(kq, changes, 1, NULL, 0, NULL);
 
     for(;;) {
-        printf("wait\n");
         ret= kevent(kq, null, 0, events, nevents, NULL);
         if (-1 == ret) {
             printf("kevent() failed!%s\n", strerror(errno));
             exit(0);
         }
 
-        printf("count:%d\n", ret);
         for(i=0; i<ret; i++) {
             ke = (kevent_p) &events[i];
+            n  = ke->data;   //  数据大小
+
             ev = (event_p)  ke->udata;
             cn = (connection_p) ev->data;
-            n  = ke->data;
-
-            printf("n:%d\n", n);
 
             switch(ke->filter) {
             case EVFILT_READ:
                 re = (event_p) cn->read;
-
-                if (re->process) {
+                if (null != re->process) {
                     re->process(ev);
                 }
                 break;
             case EVFILT_WRITE:
-                printf("%d:write\n", cn->fd);
-                exit(1);
                 wr = (event_p) cn->write;
-                if (wr->process) {
+                if (null != wr->process) {
                     wr->process(ev);
                 }
                 break;
@@ -99,9 +93,7 @@ kqueue_add_event(event_p ev, int event, int flags) {
 
     nchanges++;
 
-    printf("nchanges:%d\n", nchanges);
-
-    ret = kqueue_ev_set(ev, event, EV_ADD | flags);
+    ret = kqueue_ev_set(ev, event, EV_ADD | EV_ENABLE | flags);
     return ret;
 }
 
@@ -112,7 +104,7 @@ kqueue_del_event(event_p ev, int event, int flags) {
     ev->active   = 0;
     ev->disabled = 1;
 
-    ret = kqueue_ev_set(ev, event, EV_DELETE | flags);
+    ret = kqueue_ev_set(ev, event, EV_DELETE | EV_DISABLE | flags);
     return ret;
 }
 
