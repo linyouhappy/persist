@@ -1,5 +1,5 @@
-#ifndef SERVER_H_
-#define SERVER_H_
+#ifndef H_SERVER_INCLUDED
+#define H_SERVER_INCLUDED
 
 #include "event/event.h"
 
@@ -69,4 +69,4 @@ void server_tcp_accept(event_p ev);
 void server_tcp_write(event_p ev);
 void server_tcp_read(event_p ev);
 
-#endif /* SERVER_H_ */
+#endif
