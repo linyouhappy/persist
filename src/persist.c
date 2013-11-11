@@ -14,24 +14,49 @@
 //    thread_pool_destroy(pool);
 //}
 
-void _read(connection_p c) {
-    printf("%d:read\n", c->fd);
-}
-
-void _close(connection_p c) {
-    printf("%d:close\n", c->fd);
-}
+//void _read(connection_p c) {
+//    printf("%d:read\n", c->fd);
+//}
+//
+//void _close(connection_p c) {
+//    printf("%d:close\n", c->fd);
+//}
 
 int main(void) {
-    server_p server = server_initialize();
-    server->port = 16622;
-    server->ip   = null;
+    //  server example
+//    server_p server = server_initialize();
+//    server->port = 16622;
+//    server->ip   = null;
+//
+//    server->read  = _read;
+//    server->close = _close;
+//
+//    server_tcp_create(server);
+//    server_tcp_process();
 
-    server->read  = _read;
-    server->close = _close;
 
-    server_tcp_create(server);
-    server_tcp_process();
+    //  array example
+    int i;
+    array_p  array;
+    string_p string;
+    array = array_create(10, sizeof(string_t));
+
+    if (null == array) {
+        printf("array_create failed!");
+    }
+
+    string = array_push(array);
+    str_set(string, "aaa111");
+
+    string = array_push(array);
+    str_set(string, "bbb222");
+
+    for(i=0; i<array->nelts; i++) {
+        string = array->elts + i * array->size;
+
+        printf("%s\n", string->data);
+    }
+    printf("success\n");
 
     return EXIT_SUCCESS;
 }

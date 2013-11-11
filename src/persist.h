@@ -21,6 +21,7 @@
 #define success         SUCCESS
 #define failed          FAILED
 
+//  system
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +35,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+//  persist base
+#include "base/string.h"
+#include "base/array.h"
 
 #include "queue.h"
 #include "thread.h"             //  线程 && 线程池
