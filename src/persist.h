@@ -38,6 +38,7 @@
 //  persist base
 #include "base/string.h"
 #include "base/array.h"
+#include "base/hash.h"
 
 #include "queue.h"
 #include "thread.h"             //  线程 && 线程池

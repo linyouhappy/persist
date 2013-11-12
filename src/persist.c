@@ -36,27 +36,40 @@ int main(void) {
 
 
     //  array example
-    int i;
-    array_p  array;
-    string_p string;
-    array = array_create(10, sizeof(string_t));
+//    int i;
+//    array_p  array;
+//    string_p string;
+//    array = array_create(10, sizeof(string_t));
+//
+//    if (null == array) {
+//        printf("array_create failed!");
+//    }
+//
+//    string = array_push(array);
+//    str_set(string, "aaa111");
+//
+//    string = array_push(array);
+//    str_set(string, "bbb222");
+//
+//    for(i=0; i<array->nelts; i++) {
+//        string = array->elts + i * array->size;
+//
+//        printf("%s\n", string->data);
+//    }
+//    printf("success\n");
+    //  hash example
 
-    if (null == array) {
-        printf("array_create failed!");
-    }
+//    hash_init_t     hinit;
+//    hash_p          hash;
+//
+//    hash = malloc(sizeof(hash_t));
+//
+//    hinit.hash = hash;
+//    hinit.max_size = 1024*10;
+//    hinit.bucket_size = 64;
+//    hinit.name = "hash";
 
-    string = array_push(array);
-    str_set(string, "aaa111");
+//    hash_init(&hinit, (hash_key_t*)array->elts, array->nelts);÷
 
-    string = array_push(array);
-    str_set(string, "bbb222");
-
-    for(i=0; i<array->nelts; i++) {
-        string = array->elts + i * array->size;
-
-        printf("%s\n", string->data);
-    }
-    printf("success\n");
-
-    return EXIT_SUCCESS;
+    return 0;
 }

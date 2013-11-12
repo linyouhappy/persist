@@ -1,12 +1,16 @@
 #ifndef H_BSTRING_INCLUDED
 #define H_BSTRING_INCLUDED
 
-#include "persist.h"
+//#include "persist.h"
+
+#include <sys/types.h>
 
 typedef struct string_s             string_t;
 typedef string_t *                  string_p;
 
 #define memzero(buf, n)       (void) memset(buf, 0, n)
+
+extern int  cacheline;
 
 struct string_s {
     size_t      len;
@@ -33,4 +37,10 @@ typedef struct {
 #define tolower(c)      (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
 #define toupper(c)      (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
 
+//  字节对齐
+#define align(d, a)     (((d) + (a - 1)) & ~(a - 1))
+#define align_ptr(p, a)                                                   \
+    (u_char *) (((uintptr_t) (p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
+
+void strlow(u_char *dst, u_char *src, size_t n);
 #endif
