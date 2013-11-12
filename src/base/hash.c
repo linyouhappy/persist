@@ -25,12 +25,51 @@ int hash_key_lc(u_char *data, size_t len) {
     return key;
 }
 
+void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
+    int       i;
+    hash_elt_t  *elt;
+
+#if 0
+    ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0, "hf:\"%*s\"", len, name);
+#endif
+
+    elt = hash->buckets[key % hash->size];
+
+    if (elt == NULL) {
+        return NULL;
+    }
+
+    while (elt->value) {
+        if (len != (size_t) elt->len) {
+            goto next;
+        }
+
+        for (i = 0; i < len; i++) {
+            if (name[i] != elt->name[i]) {
+                goto next;
+            }
+        }
+
+        return elt->value;
+
+    next:
+
+        elt = (hash_elt_t *) align_ptr(&elt->name[0] + elt->len,
+                                               sizeof(void *));
+        continue;
+    }
+
+    return NULL;
+}
+
 int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
+    //@TODO
+    cpuinfo();
 
     u_char          *elts;
     size_t           len;
     u_short         *test;
-    int              i, n, key, size, start, bucket_size;
+    unsigned long    i, n, key, size, start, bucket_size;
     hash_elt_t  *elt, **buckets;
 
     for (n = 0; n < nelts; n++) {
@@ -43,15 +82,27 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
     }
 
     test = malloc(hinit->max_size * sizeof(u_short));
+#if 1
+    printf("test malloc size:%ld\n", hinit->max_size * sizeof(u_short));
+#endif
     if (test == NULL) {
         return failed;
     }
 
     bucket_size = hinit->bucket_size - sizeof(void *);
 
+#if 1
+    printf("bucket_size:%ld\n", hinit->bucket_size - sizeof(void *));
+#endif
+
     start = nelts / (bucket_size / (2 * sizeof(void *)));
+
+#if 1
+#endif
+
     start = start ? start : 1;
 
+    // @TODO
     if (hinit->max_size > 10000 && nelts && hinit->max_size / nelts < 100) {
         start = hinit->max_size - 1000;
     }
@@ -65,13 +116,12 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
                 continue;
             }
 
+            //  计算真实KEY值
             key = names[n].key_hash % size;
             test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
 
-#if 0
-            ngx_log_error(NGX_LOG_ALERT, hinit->pool->log, 0,
-                          "%ui: %ui %ui \"%V\"",
-                          size, key, test[key], &names[n].key);
+#if 1
+            printf("%lu: %lu %u \"%s\"\n", size, key, test[key], names[n].key.data);
 #endif
 
             if (test[key] > (u_short) bucket_size) {
@@ -108,6 +158,7 @@ found:
 
         key = names[n].key_hash % size;
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
+        printf("!!!test[%lu]:%u\n", key, test[key]);
     }
 
     len = 0;
@@ -119,6 +170,7 @@ found:
 
         test[i] = (u_short) (align(test[i], cacheline));
 
+        printf("!!!test[%lu]:%u\n", i, test[i]);
         len += test[i];
     }
 
@@ -155,6 +207,7 @@ found:
 
         buckets[i] = (hash_elt_t *) elts;
         elts += test[i];
+        printf("test[%lu]:%u\n", i, test[i]);
 
     }
 
@@ -193,17 +246,16 @@ found:
     hinit->hash->buckets = buckets;
     hinit->hash->size = size;
 
-#if 0
+#if 1
 
     for (i = 0; i < size; i++) {
-        ngx_str_t   val;
-        ngx_uint_t  key;
+        string_t   val;
+        int        key;
 
         elt = buckets[i];
 
         if (elt == NULL) {
-            ngx_log_error(NGX_LOG_ALERT, hinit->pool->log, 0,
-                          "%ui: NULL", i);
+//            printf("%ui: NULL", i);
             continue;
         }
 
@@ -213,10 +265,10 @@ found:
 
             key = hinit->key(val.data, val.len);
 
-            ngx_log_error(NGX_LOG_ALERT, hinit->pool->log, 0,
-                          "%ui: %p \"%V\" %ui", i, elt, &val, key);
+//            ngx_log_error(NGX_LOG_ALERT, hinit->pool->log, 0,
+//                          "%ui: %p \"%V\" %ui", i, elt, &val, key);
 
-            elt = (ngx_hash_elt_t *) ngx_align_ptr(&elt->name[0] + elt->len,
+            elt = (hash_elt_t *) align_ptr(&elt->name[0] + elt->len,
                                                    sizeof(void *));
         }
     }

@@ -8,6 +8,12 @@
 typedef struct string_s             string_t;
 typedef string_t *                  string_p;
 
+#define strval_p(str)               str->data;
+#define sv(str)                     strval_p(&str);
+
+#define strlen_p(str)               str->len;
+#define sl(str)                     strlen_p(&str);
+
 #define memzero(buf, n)       (void) memset(buf, 0, n)
 
 extern int  cacheline;

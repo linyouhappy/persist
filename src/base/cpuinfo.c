@@ -11,9 +11,8 @@ static inline void cpuid(uint32_t i, uint32_t *buf);
 
 #if ( __i386__ )
 
-static ngx_inline void
-ngx_cpuid(uint32_t i, uint32_t *buf)
-{
+static inline void
+cpuid(uint32_t i, uint32_t *buf) {
 
     /*
      * we could not use %ebx as output parameter if gcc builds PIC,

@@ -57,19 +57,55 @@ int main(void) {
 //        printf("%s\n", string->data);
 //    }
 //    printf("success\n");
+//    exit(0);
     //  hash example
 
-//    hash_init_t     hinit;
-//    hash_p          hash;
-//
-//    hash = malloc(sizeof(hash_t));
-//
-//    hinit.hash = hash;
-//    hinit.max_size = 1024*10;
-//    hinit.bucket_size = 64;
-//    hinit.name = "hash";
+    hash_init_t     hinit;
+    hash_p          hash;
+    int             i;
+    array_p         array;
+    hash_key_p      key;
+    static string_t names[] = {string("rainx"),
+            string("xiaozhe"),
+            string("zhoujian")};
+    static char* descs[] = {
+            "rainx's id is 1",
+            "xiaozhe's id is 2",
+            "zhoujian's id is 3"
+    };
 
-//    hash_init(&hinit, (hash_key_t*)array->elts, array->nelts);÷
+    array = array_create(10, sizeof(hash_key_t));;
+    hash = malloc(sizeof(hash_t));
+
+    hinit.hash = hash;
+    hinit.key = &hash_key_lc;
+    hinit.max_size = 1024*10;
+    hinit.bucket_size = 64;
+    hinit.name = "hash";
+
+    for(i = 0; i < 3; i++) {
+        key            = (hash_key_t*) array_push(array);
+        key->key       = (names[i]);
+        key->key_hash  = hash_key_lc(key->key.data, key->key.len);
+        key->value     = (void*) descs[i];
+        printf("key: %s ,\tkey_hash: %u\n", key->key.data, key->key_hash);
+    }
+
+    if (hash_init(&hinit, (hash_key_t*) array->elts, array->nelts) !=success){
+        return 1;
+    }
+    printf("init success\n");
+
+    // 查找
+    int k;
+    char*               find;
+    k    = hash_key_lc(names[0].data, names[0].len);
+    printf("%s key is %d\n", names[0].data, k);
+    find = (char*) hash_find(hash, k, (u_char*) names[0].data, names[0].len);
+
+    if (find) {
+        printf("value: %s\n", (char*) find);
+    }
 
     return 0;
 }

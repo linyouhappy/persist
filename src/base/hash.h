@@ -61,6 +61,7 @@ struct hash_wildcard_s {
 
 int hash_key(u_char *data, size_t len);
 int hash_key_lc(u_char *data, size_t len);
-int hash_init(hash_init_p, hash_key_p, int);
+void * hash_find(hash_t *hash, int key, u_char *name, size_t len);
+int hash_init(hash_init_p hinit, hash_key_p names, int nelts);
 
 #endif
