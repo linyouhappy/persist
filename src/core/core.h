@@ -33,7 +33,7 @@
 //typedef short                   int16_t;
 //typedef unsigned short          __uint16_t;
 //typedef int                     __int32_t;
-typedef unsigned int            uint;
+//typedef unsigned int            uint;
 //typedef long long               __int64_t;
 //typedef unsigned long long      __uint64_t;
 

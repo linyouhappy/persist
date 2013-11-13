@@ -36,20 +36,20 @@ struct hash_init_s {
 
 //  主结构
 struct hash_s {
-    hash_elt_t  **buckets;
-    int           size;
+    hash_elt_t  **buckets;                  //  BUCKET数组指针
+    int           size;                     //  BUCKET数量
 };
 
 struct hash_elt_s {
-    void             *value;
-    u_short           len;
-    u_char            name[1];
+    void             *value;                // 键值  64bit:8B
+    u_short           len;                  // 长度  64bit:2
+    u_char            name[1];              // @TODO 求解答 64bit:1
 } ;
 
 //  KEY
 struct hash_key_s {
     string_t          key;
-    int               hash;
+    uint              hash;
     void             *value;
 };
 

@@ -8,8 +8,8 @@ void hash_demo_test(void) {
     hash_key_p   note;
 
     keyval_t     list[] = {
-        keyval("a", "1"),
-        keyval("b", "2"),
+        keyval("aaaabbbbccccdddd", "12345678"),
+        keyval("b", "qwertyu"),
     };
 
 
@@ -34,6 +34,20 @@ void hash_demo_test(void) {
     hinit.bucket_size = 128;
 
     hash_init(&hinit, array.elts, array.nelts);
+
+    printf("init\n");
+
+
+    // 查找
+    int k;
+    char*               find;
+    k    = hash_key_lc(list[0].key.data, list[0].key.len);
+    printf("%s key is %d\n", list[0].key.data, k);
+    find = (char*) hash_find(hinit.hash, k, (u_char*) list[0].key.data, list[0].key.len);
+
+    if (find) {
+        printf("value: %s\n", (char*) find);
+    }
 
     printf("success\n");
 

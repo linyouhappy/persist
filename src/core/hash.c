@@ -29,10 +29,12 @@ void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
     int       i;
     hash_elt_t  *elt;
 
+
 #if 0
-    ngx_log_error(NGX_LOG_ALERT, ngx_cycle->log, 0, "hf:\"%*s\"", len, name);
+   printf("hf:\"%*s\"", len, name);
 #endif
 
+    //  计算KEY所在的ELT起始位置
     elt = hash->buckets[key % hash->size];
 
     if (elt == NULL) {
@@ -40,6 +42,7 @@ void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
     }
 
     while (elt->value) {
+        //  判断长度
         if (len != (size_t) elt->len) {
             goto next;
         }
@@ -84,23 +87,19 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
     }
 
     test = malloc(hinit->max_size * sizeof(u_short));
-#if 1
-    printf("test malloc size:%ld\n", hinit->max_size * sizeof(u_short));
-#endif
+
     if (test == NULL) {
         return failed;
     }
 
+    //  每个BUCKET后面需要一个NULL指针数据
     bucket_size = hinit->bucket_size - sizeof(void *);
 
-#if 1
-    printf("bucket_size:%ld\n", hinit->bucket_size - sizeof(void *));
-#endif
 
-    start = nelts / (bucket_size / (2 * sizeof(void *)));
-
-#if 1
-#endif
+    /*
+     *  2*sizeof(void*) : hash_elt_t
+     */
+    start = nelts / (bucket_size / sizeof(hash_elt_t)); //(2 * sizeof(void *)));
 
     start = start ? start : 1;
 
@@ -121,10 +120,6 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
             //  计算真实KEY值
             key = names[n].hash % size;
             test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
-
-#if 1
-            printf("%lu: %lu %u \"%s\"\n", size, key, test[key], names[n].key.data);
-#endif
 
             if (test[key] > (u_short) bucket_size) {
                 goto next;
@@ -160,7 +155,6 @@ found:
 
         key = names[n].hash % size;
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
-        printf("~~~test[%lu]:%u\n", key, test[key]);
     }
 
     len = 0;
@@ -172,7 +166,6 @@ found:
 
         test[i] = (u_short) (align(test[i], core_cacheline));
 
-        printf("!!!test[%lu]:%u\n", i, test[i]);
         len += test[i];
     }
 
@@ -183,11 +176,10 @@ found:
             return failed;
         }
 
-        buckets = (hash_elt_t **)
-                      ((u_char *) hinit->hash + sizeof(hash_wildcard_t));
+        buckets = (hash_elt_t **) ((u_char *) hinit->hash + sizeof(hash_wildcard_t));
 
     } else {
-        buckets = malloc(size * sizeof(hash_elt_t *));
+        buckets = malloc(size * sizeof(hash_elt_p));
         if (buckets == NULL) {
             free(test);
             return failed;
@@ -209,7 +201,6 @@ found:
 
         buckets[i] = (hash_elt_t *) elts;
         elts += test[i];
-        printf("test[%lu]:%u\n", i, test[i]);
 
     }
 
@@ -222,14 +213,17 @@ found:
             continue;
         }
 
+        //  计算BUCKETS下的标记
         key = names[n].hash % size;
+        //  获取当前数据写入的位置 : buckets[key] key起始位置， test[key] 已使用的大小
         elt = (hash_elt_t *) ((u_char *) buckets[key] + test[key]);
 
         elt->value = names[n].value;
-        elt->len = (u_short) names[n].key.len;
+        elt->len   = (u_short) names[n].key.len;
 
         strlow(elt->name, names[n].key.data, names[n].key.len);
 
+        //  记录已使用大小 (字节对齐后的大小)
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
     }
 
@@ -246,35 +240,6 @@ found:
     free(test);
 
     hinit->hash->buckets = buckets;
-    hinit->hash->size = size;
-#if 0
-
-    for (i = 0; i < size; i++) {
-        string_t   val;
-        int        key;
-
-        elt = buckets[i];
-
-        if (elt == NULL) {
-//            printf("%ui: NULL", i);
-            continue;
-        }
-
-        while (elt->value) {
-            val.len = elt->len;
-            val.data = &elt->name[0];
-
-            key = hinit->key(val.data, val.len);
-
-//            ngx_log_error(NGX_LOG_ALERT, hinit->pool->log, 0,
-//                          "%ui: %p \"%V\" %ui", i, elt, &val, key);
-
-            elt = (hash_elt_t *) align_ptr(&elt->name[0] + elt->len,
-                                                   sizeof(void *));
-        }
-    }
-
-#endif
-
+    hinit->hash->size    = size;
     return success;
 }
