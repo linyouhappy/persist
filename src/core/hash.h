@@ -20,6 +20,7 @@ typedef hash_key_t *                    hash_key_p;
 typedef struct hash_wildcard_s          hash_wildcard_t;
 typedef hash_wildcard_t *               hahs_wildcard_p;
 
+//@TODO 在HASH里的作用
 #define HASH_ELT_SIZE(name)             (sizeof(void *) + align((name)->key.len + 2, sizeof(void *)))
 #define hash(key, c)                    ((int) key * 31 + c)
 
@@ -43,7 +44,7 @@ struct hash_s {
 struct hash_elt_s {
     void             *value;                // 键值  64bit:8B
     u_short           len;                  // 长度  64bit:2
-    u_char            name[1];              // @TODO 求解答 64bit:1
+    u_char            name[1];              // 柔性数组  @TODO 求解答 64bit:1
 } ;
 
 //  KEY
