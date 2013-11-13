@@ -6,11 +6,20 @@
 typedef struct string_s             string_t;
 typedef string_t *                  string_p;
 
+typedef struct keyval_s             keyval_t;
+typedef keyval_t *                  keyval_p;
+
 #define strval_p(str)               str->data;
 #define sv(str)                     strval_p(&str);
 
 #define strlen_p(str)               str->len;
 #define sl(str)                     strlen_p(&str);
+
+#define string(str)                 { sizeof(str) - 1, (u_char *) str }
+#define string_null                 { 0, NULL }
+
+#define keyval(key, value)          { string(key), string(value) }
+#define keyval_null                 { string_null, string_null }
 
 #define memzero(buf, n)       (void) memset(buf, 0, n)
 
@@ -21,13 +30,10 @@ struct string_s {
     u_char     *data;
 };
 
-typedef struct {
+struct keyval_s {
     string_t   key;
     string_t   value;
-} keyval_t;
-
-#define string(str)     { sizeof(str) - 1, (u_char *) str }
-#define string_null     { 0, NULL }
+};
 
 #define str_set(str, text)                          \
     (str)->len = sizeof(text) - 1;                  \

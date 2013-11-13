@@ -63,12 +63,16 @@ void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
 }
 
 int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
-    //@TODO
+    //  检查CACHELINE是否初始化
+    if (core_cacheline == 0) {
+        core_cpuinfo();
+    }
+
     u_char          *elts;
     size_t           len;
     u_short         *test;
-    unsigned long    i, n, key, size, start, bucket_size;
-    hash_elt_t  *elt, **buckets;
+    uint            i, n, key, size, start, bucket_size;
+    hash_elt_t      *elt, **buckets;
 
     for (n = 0; n < nelts; n++) {
         if (hinit->bucket_size < HASH_ELT_SIZE(&names[n]) + sizeof(void *)) {
@@ -115,7 +119,7 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
             }
 
             //  计算真实KEY值
-            key = names[n].key_hash % size;
+            key = names[n].hash % size;
             test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
 
 #if 1
@@ -154,9 +158,9 @@ found:
             continue;
         }
 
-        key = names[n].key_hash % size;
+        key = names[n].hash % size;
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
-        printf("!!!test[%lu]:%u\n", key, test[key]);
+        printf("~~~test[%lu]:%u\n", key, test[key]);
     }
 
     len = 0;
@@ -166,7 +170,7 @@ found:
             continue;
         }
 
-        test[i] = (u_short) (align(test[i], cacheline));
+        test[i] = (u_short) (align(test[i], core_cacheline));
 
         printf("!!!test[%lu]:%u\n", i, test[i]);
         len += test[i];
@@ -190,13 +194,13 @@ found:
         }
     }
 
-    elts = malloc(len + cacheline);
+    elts = malloc(len + core_cacheline);
     if (elts == NULL) {
         free(test);
         return failed;
     }
 
-    elts = align_ptr(elts, cacheline);
+    elts = align_ptr(elts, core_cacheline);
 
     for (i = 0; i < size; i++) {
         if (test[i] == sizeof(void *)) {
@@ -218,7 +222,7 @@ found:
             continue;
         }
 
-        key = names[n].key_hash % size;
+        key = names[n].hash % size;
         elt = (hash_elt_t *) ((u_char *) buckets[key] + test[key]);
 
         elt->value = names[n].value;
@@ -243,8 +247,7 @@ found:
 
     hinit->hash->buckets = buckets;
     hinit->hash->size = size;
-
-#if 1
+#if 0
 
     for (i = 0; i < size; i++) {
         string_t   val;

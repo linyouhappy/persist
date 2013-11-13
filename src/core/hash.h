@@ -49,7 +49,7 @@ struct hash_elt_s {
 //  KEY
 struct hash_key_s {
     string_t          key;
-    int               key_hash;
+    int               hash;
     void             *value;
 };
 
@@ -58,6 +58,8 @@ struct hash_wildcard_s {
     hash_t            hash;
     void             *value;
 };
+
+extern int core_cacheline;
 
 int hash_key(u_char *data, size_t len);
 int hash_key_lc(u_char *data, size_t len);

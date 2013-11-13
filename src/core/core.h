@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>     // memset
+
 #include <sys/types.h>  // u_char
 
 #define __CORE_VERSION          0.1
@@ -25,6 +26,16 @@
 
 #define success                 SUCCESS
 #define failed                  FAILED
+
+// type
+//typedef __int8_t                int_8;
+//typedef __uint8_t               uint_8;
+//typedef short                   int16_t;
+//typedef unsigned short          __uint16_t;
+//typedef int                     __int32_t;
+typedef unsigned int            uint;
+//typedef long long               __int64_t;
+//typedef unsigned long long      __uint64_t;
 
 #include "core/string.h"
 #include "core/array.h"

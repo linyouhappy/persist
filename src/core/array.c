@@ -1,6 +1,6 @@
 #include "core/array.h"
 
-int array_init(array_t *array, int n, size_t size) {
+int array_init(array_p array, int n, size_t size) {
     array->nelts = 0;
     array->size = size;
     array->max  = n;
@@ -13,7 +13,7 @@ int array_init(array_t *array, int n, size_t size) {
     return success;
 }
 
-array_t * array_create(int n, size_t size) {
+array_p array_create(int n, size_t size) {
     array_t *a;
 
     a = malloc(sizeof(array_t));

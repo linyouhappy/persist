@@ -3,6 +3,8 @@
 
 #include "core/core.h"
 
+#define array_count(var, struct)      sizeof(var)/sizeof(struct)
+
 typedef struct array_s              array_t;
 typedef array_t *                   array_p;
 
@@ -13,10 +15,10 @@ struct array_s {
     int          max;                   //  最大个数
 };
 
-int array_init(array_t *array, int n, size_t size);
-array_t *array_create(int n, size_t size);
-void array_destroy(array_t *a);
-void *array_push(array_t *a);
-void *array_push_n(array_t *a, int n);
+int array_init(array_p array, int n, size_t size);
+array_p array_create(int n, size_t size);
+void array_destroy(array_p a);
+void *array_push(array_p a);
+void *array_push_n(array_p a, int n);
 
 #endif
