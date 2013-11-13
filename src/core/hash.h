@@ -1,7 +1,7 @@
-#ifndef H_BHASH_INCLUDED
-#define H_BHASH_INCLUDED
+#ifndef H_CORE_HASH_INCLUDED
+#define H_CORE_HASH_INCLUDED
 
-#include "persist.h"
+#include "core/core.h"
 
 typedef int (*hash_key_pt) (u_char *data, size_t len);
 

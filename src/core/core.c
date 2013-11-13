@@ -1,25 +1,18 @@
+#include "core/core.h"
 
-#include "persist.h"
+int  core_cacheline = 0;
 
-int  cacheline = 0;
+void core_init(void) {
+    core_cpuinfo();
+}
 
 #if (( __i386__ || __amd64__ ) && ( __GNUC__ || __INTEL_COMPILER ))
-
 
 static inline void cpuid(uint32_t i, uint32_t *buf);
 
 
 #if ( __i386__ )
-
-static inline void
-cpuid(uint32_t i, uint32_t *buf) {
-
-    /*
-     * we could not use %ebx as output parameter if gcc builds PIC,
-     * and we could not save %ebx on stack, because %esp is used,
-     * when the -fomit-frame-pointer optimization is specified.
-     */
-
+static inline void cpuid(uint32_t i, uint32_t *buf) {
     __asm__ (
 
     "    mov    %%ebx, %%esi;  "
@@ -34,18 +27,11 @@ cpuid(uint32_t i, uint32_t *buf) {
 
     : : "a" (i), "D" (buf) : "ecx", "edx", "esi", "memory" );
 }
-
-
 #else /* __amd64__ */
-
-
-static inline void
-cpuid(uint32_t i, uint32_t *buf)
-{
+static inline void cpuid(uint32_t i, uint32_t *buf) {
     uint32_t  eax, ebx, ecx, edx;
 
     __asm__ (
-
         "cpuid"
 
     : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (i) );
@@ -55,15 +41,11 @@ cpuid(uint32_t i, uint32_t *buf)
     buf[2] = edx;
     buf[3] = ecx;
 }
-
-
 #endif
 
 
 /* auto detect the L2 cache line size of modern and widespread CPUs */
-
-void
-cpuinfo(void) {
+void core_cpuinfo(void) {
     u_char    *vendor;
     uint32_t   vbuf[5], cpu[4], model;
 
@@ -89,18 +71,18 @@ cpuinfo(void) {
 
         /* Pentium */
         case 5:
-            cacheline = 32;
+            core_cacheline = 32;
             break;
 
         /* Pentium Pro, II, III */
         case 6:
-            cacheline = 32;
+            core_cacheline = 32;
 
             model = ((cpu[0] & 0xf0000) >> 8) | (cpu[0] & 0xf0);
 
             if (model >= 0xd0) {
                 /* Intel Core, Core 2, Atom */
-                cacheline = 64;
+                core_cacheline = 64;
             }
 
             break;
@@ -110,22 +92,15 @@ cpuinfo(void) {
          * it prefetches up to two cache lines during memory read
          */
         case 15:
-            cacheline = 128;
+            core_cacheline = 128;
             break;
         }
 
     } else if (strcmp((const char *)vendor, (const char *)"AuthenticAMD") == 0) {
-        cacheline = 64;
+        core_cacheline = 64;
     }
 }
 
 #else
-
-
-void
-ngx_cpuinfo(void)
-{
-}
-
-
+void core_cpuinfo(void) { }
 #endif

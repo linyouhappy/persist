@@ -1,4 +1,4 @@
-#include "array.h"
+#include "core/array.h"
 
 int array_init(array_t *array, int n, size_t size) {
     array->nelts = 0;

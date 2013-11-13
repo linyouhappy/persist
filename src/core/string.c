@@ -1,4 +1,4 @@
-#include "string.h"
+#include "core/core.h"
 
 void strlow(u_char *dst, u_char *src, size_t n) {
     while (n) {

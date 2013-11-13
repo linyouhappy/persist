@@ -1,9 +1,7 @@
 #ifndef H_BSTRING_INCLUDED
 #define H_BSTRING_INCLUDED
 
-//#include "persist.h"
-
-#include <sys/types.h>
+#include "core/core.h"
 
 typedef struct string_s             string_t;
 typedef string_t *                  string_p;
@@ -22,7 +20,6 @@ struct string_s {
     size_t      len;
     u_char     *data;
 };
-
 
 typedef struct {
     string_t   key;

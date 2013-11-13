@@ -1,4 +1,4 @@
-#include "persist.h"
+#include "core/hash.h"
 
 int hash_key(u_char *data, size_t len) {
     int  i, key;
@@ -64,8 +64,6 @@ void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
 
 int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
     //@TODO
-    cpuinfo();
-
     u_char          *elts;
     size_t           len;
     u_short         *test;

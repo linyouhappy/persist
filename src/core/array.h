@@ -1,7 +1,7 @@
-#ifndef H_BARRAY_INCLUDED
-#define H_BARRAY_INCLUDED
+#ifndef H_CORE_ARRAY_INCLUDED
+#define H_CORE_ARRAY_INCLUDED
 
-#include "persist.h"
+#include "core/core.h"
 
 typedef struct array_s              array_t;
 typedef array_t *                   array_p;

@@ -1,3 +1,9 @@
 README
 -------------------------------------
 /core  基础结构
+		core.h
+		core.c
+	依赖关系
+		string
+		array
+		hash
