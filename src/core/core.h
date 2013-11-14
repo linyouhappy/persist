@@ -38,6 +38,7 @@
 //typedef unsigned long long      __uint64_t;
 
 #include "core/string.h"
+#include "core/mpm.h"
 #include "core/array.h"
 #include "core/hash.h"
 

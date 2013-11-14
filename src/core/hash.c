@@ -57,8 +57,7 @@ void * hash_find(hash_t *hash, int key, u_char *name, size_t len) {
 
     next:
 
-        elt = (hash_elt_t *) align_ptr(&elt->name[0] + elt->len,
-                                               sizeof(void *));
+        elt = (hash_elt_t *) align_ptr(&elt->name[0] + elt->len, sizeof(void *));
         continue;
     }
 
@@ -79,6 +78,7 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
 
     for (n = 0; n < nelts; n++) {
         if (hinit->bucket_size < HASH_ELT_SIZE(&names[n]) + sizeof(void *)) {
+            printf("%ld %lu\n", names[n].key.len, HASH_ELT_SIZE(&names[n]));
             printf("could not build the %s, you should "
                    "increase %s_bucket_size: %i",
                     hinit->name, hinit->name, hinit->bucket_size);
@@ -108,6 +108,7 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
         start = hinit->max_size - 1000;
     }
 
+    // 这里计算的是KEY长度
     for (size = start; size < hinit->max_size; size++) {
 
         memzero(test, size * sizeof(u_short));
@@ -120,6 +121,8 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
             //  计算真实KEY值
             key = names[n].hash % size;
             test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
+
+            printf("%u %lu (%lu)\"%s\"\n", key, HASH_ELT_SIZE(&names[n]), names[n].key.len, names[n].value);
 
             if (test[key] > (u_short) bucket_size) {
                 goto next;
@@ -144,6 +147,7 @@ int hash_init(hash_init_p hinit, hash_key_p names, int nelts) {
 
 found:
 
+    //  重置TEST变量
     for (i = 0; i < size; i++) {
         test[i] = sizeof(void *);
     }
@@ -170,13 +174,13 @@ found:
     }
 
     if (hinit->hash == NULL) {
-        hinit->hash = malloc(sizeof(hash_wildcard_t) + size * sizeof(hash_elt_t *));
+        hinit->hash = malloc(sizeof(hash_wildcard_t) + size * sizeof(hash_elt_p));
         if (hinit->hash == NULL) {
             free(test);
             return failed;
         }
 
-        buckets = (hash_elt_t **) ((u_char *) hinit->hash + sizeof(hash_wildcard_t));
+        buckets = (hash_elt_pp) ((u_char *) hinit->hash + sizeof(hash_wildcard_t));
 
     } else {
         buckets = malloc(size * sizeof(hash_elt_p));
@@ -227,6 +231,7 @@ found:
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));
     }
 
+    //  为BUCKETS结尾补一个NULL(空指针)
     for (i = 0; i < size; i++) {
         if (buckets[i] == NULL) {
             continue;

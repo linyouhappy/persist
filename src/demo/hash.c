@@ -8,8 +8,8 @@ void hash_demo_test(void) {
     hash_key_p   note;
 
     keyval_t     list[] = {
-        keyval("aaaabbbbccccdddd", "12345678"),
-        keyval("b", "qwertyu"),
+        keyval("a", "123456781234567812345678123456781234567812345678"),
+        keyval("b", "qwertyuiqwertyuiqwertyuiqwertyuiqwertyuiqwertyui"),
     };
 
 
@@ -26,17 +26,17 @@ void hash_demo_test(void) {
         printf("key: %s ,\tkey_hash: %u\n", note->key.data, note->hash);
     }
 
+    printf("===============\n");
 
     hinit.hash        = malloc(sizeof(hash_t));
     hinit.name        = "hahs_test";
     hinit.key         = &hash_key_lc;
     hinit.max_size    = 8;
-    hinit.bucket_size = 128;
+    hinit.bucket_size = 1;
 
-    hash_init(&hinit, array.elts, array.nelts);
-
-    printf("init\n");
-
+    if(failed == hash_init(&hinit, array.elts, array.nelts)) {
+        exit(1);
+    }
 
     // 查找
     int k;
