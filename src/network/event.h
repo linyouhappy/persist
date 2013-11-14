@@ -1,8 +1,6 @@
 #ifndef H_NETWORK_EVENT_INCLUDED
 #define H_NETWORK_EVENT_INCLUDED
 
-#include "network/network.h"
-
 typedef struct event_s                  event_t;
 typedef event_t *                       event_p;
 typedef event_p *                       event_pp;
@@ -15,6 +13,7 @@ typedef event_module_t                  event_module_p;
 typedef struct event_actions_s          event_actions_t;
 typedef event_actions_t *               event_actions_p;
 
+#include "network/network.h"
 
 // KQUEUE
 #define NGX_READ_EVENT     EVFILT_READ
@@ -73,5 +72,5 @@ struct event_module_s {
 extern event_actions_t   event_actions;
 
 int event_init();
-//
+
 #endif

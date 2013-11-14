@@ -16,17 +16,6 @@ typedef connection_t *                  connection_p;
 #include "network/event.h"
 #include "network/server.h"
 
-struct server_s {
-    char                     *ip;
-    uint16_t                  port;
-
-    server_read_pt            read;
-    server_close_pt           close;
-
-//    void                      accept;   //  @TODO ACCEPT 接口
-//    void                      write;    //  @TODO 不晓得啥时候触发，暂时用不上
-};
-
 
 //  listen
 struct listening_s {

@@ -1,4 +1,4 @@
-#include "network/network.h"
+#include "network/server.h"
 
 server_p server_initialize() {
     server_p server;

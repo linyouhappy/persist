@@ -1,8 +1,6 @@
 #ifndef H_SERVER_INCLUDED
 #define H_SERVER_INCLUDED
 
-#include "network/network.h"
-
 #define EVENT_TYPE_LISTENING            1
 #define EVENT_TYPE_CONNECTION           2
 
@@ -13,8 +11,22 @@ typedef server_t *                      server_p;
 typedef struct server_event_s           server_event_t;
 typedef server_event_t *                server_event_p;
 
+#include "network/network.h"
+
 typedef void (*server_read_pt)(connection_p);
 typedef void (*server_close_pt)(connection_p);
+
+
+struct server_s {
+    char                     *ip;
+    uint16_t                  port;
+
+    server_read_pt            read;
+    server_close_pt           close;
+
+//    void                      accept;   //  @TODO ACCEPT 接口
+//    void                      write;    //  @TODO 不晓得啥时候触发，暂时用不上
+};
 
 event_process_pt                        server_accept;
 event_process_pt                        server_read;
