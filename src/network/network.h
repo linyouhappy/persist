@@ -1,14 +1,11 @@
-#ifndef H_SERVER_INCLUDED
-#define H_SERVER_INCLUDED
+#ifndef H_NETWORK_INCLUDED
+#define H_NETWORK_INCLUDED
 
-#include "event/event.h"
+#include "core/core.h"
 
-#define EVENT_TYPE_LISTENING            1
-#define EVENT_TYPE_CONNECTION           2
-
-typedef struct server_s                 server_t;
-typedef server_t *                      server_p;
-
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 typedef struct listening_s              listening_t;
 typedef listening_t *                   listening_p;
@@ -16,19 +13,8 @@ typedef listening_t *                   listening_p;
 typedef struct connection_s             connection_t;
 typedef connection_t *                  connection_p;
 
-typedef struct server_event_s           server_event_t;
-typedef server_event_t *                server_event_p;
-
-typedef void (*server_read_pt)(connection_p);
-typedef void (*server_close_pt)(connection_p);
-
-event_process_pt                        server_accept;
-event_process_pt                        server_read;
-event_process_pt                        server_write;
-
-server_read_pt                          server_user_read;
-server_close_pt                         server_user_close;
-
+#include "network/event.h"
+#include "network/server.h"
 
 struct server_s {
     char                     *ip;
@@ -61,12 +47,5 @@ struct connection_s {
     void *                 read;
     void *                 write;
 };
-server_p server_initialize();
-int server_tcp_create(server_p);
-int server_tcp_process();
-
-void server_tcp_accept(event_p ev);
-void server_tcp_write(event_p ev);
-void server_tcp_read(event_p ev);
 
 #endif

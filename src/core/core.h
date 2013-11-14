@@ -1,11 +1,14 @@
-#ifndef H_CORE
-#define H_CORE
+#ifndef H_CORE_INCLUDED
+#define H_CORE_INCLUDED
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>     // memset
+#include <unistd.h>     // read
 
 #include <sys/types.h>  // u_char
+
+#include <sys/errno.h>
 
 #define __CORE_VERSION          0.1
 
