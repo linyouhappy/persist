@@ -20,7 +20,6 @@ typedef keyval_t *                  keyval_p;
 
 #define keyval(key, value)          { string(key), string(value) }
 #define keyval_null                 { string_null, string_null }
-
 #define memzero(buf, n)       (void) memset(buf, 0, n)
 
 extern int  cacheline;
@@ -52,4 +51,7 @@ struct keyval_s {
     (u_char *) (((uintptr_t) (p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
 
 void strlow(u_char *dst, u_char *src, size_t n);
+
+//  内存
+void * mmalloc(size_t size);
 #endif

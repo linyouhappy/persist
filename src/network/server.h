@@ -13,6 +13,7 @@ typedef server_event_t *                server_event_p;
 
 #include "network/network.h"
 
+typedef void (*server_accept_pt)(connection_p);
 typedef void (*server_read_pt)(connection_p);
 typedef void (*server_close_pt)(connection_p);
 
@@ -21,10 +22,10 @@ struct server_s {
     char                     *ip;
     uint16_t                  port;
 
+    server_accept_pt          accept;   //  @TODO ACCEPT 接口
     server_read_pt            read;
     server_close_pt           close;
 
-//    void                      accept;   //  @TODO ACCEPT 接口
 //    void                      write;    //  @TODO 不晓得啥时候触发，暂时用不上
 };
 
@@ -32,10 +33,13 @@ event_process_pt                        server_accept;
 event_process_pt                        server_read;
 event_process_pt                        server_write;
 
+server_accept_pt                        server_user_accept;
 server_read_pt                          server_user_read;
 server_close_pt                         server_user_close;
 
-server_p server_initialize();
+
+//  初始化
+server_p server_init();
 int server_tcp_create(server_p);
 int server_tcp_process();
 

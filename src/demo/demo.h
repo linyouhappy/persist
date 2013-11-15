@@ -2,7 +2,9 @@
 #define H_DEMO_INCLUDED
 
 #include "core/core.h"
+
 #include "demo/string.h"
 #include "demo/hash.h"
+#include "demo/server.h"
 
 #endif

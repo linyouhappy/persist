@@ -1,9 +1,8 @@
 #include "network/server.h"
 
-server_p server_initialize() {
+server_p server_init() {
     server_p server;
-    server = (server_p) malloc(sizeof(server_t));
-    memset(server, 0, sizeof(server_t));
+    server = (server_p) mmalloc(sizeof(server_t));
     return server;
 }
 
@@ -15,8 +14,7 @@ int server_tcp_create(server_p server) {
     int          ret;
     struct sockaddr_in * sockaddr;
 
-    listening = (listening_p) malloc(sizeof(listening_t));
-    memset(listening, 0, sizeof(listening_t));
+    listening = (listening_p) mmalloc(sizeof(listening_t));
 
 //    listening->process = null;
 
@@ -51,21 +49,20 @@ int server_tcp_create(server_p server) {
     server_read   = server_tcp_read;
     server_write  = server_tcp_write;
 
+    server_user_accept = server->accept;
     server_user_read   = server->read;
     server_user_close  = server->close;
 
     //  事件初始化
     event_init();
 
-    connection = (connection_p) malloc(sizeof(connection_t));
-
+    connection = (connection_p) mmalloc(sizeof(connection_t));
     connection->fd = listening->fd;
-
     connection->listening = listening;
     listening->connection = connection;
 
-    connection->read  = malloc(sizeof(event_t));
-    connection->write = malloc(sizeof(event_t));
+    connection->read  = mmalloc(sizeof(event_t));
+    connection->write = mmalloc(sizeof(event_t));
 
     read = connection->read;
     read->data    = connection;
@@ -96,6 +93,7 @@ int server_tcp_process() {
 }
 
 void server_tcp_accept(event_p ev) {
+
     listening_p          ls;
     connection_p         lc, c;
     event_p              read;
@@ -121,13 +119,17 @@ void server_tcp_accept(event_p ev) {
 
     read->process = server_read;
 
-    printf("%d:accept\n", lc->fd);
-
     ret = event_actions.add(read, EVFILT_READ, 0);
 
     if (-1 == ret) {
         printf("kqueue_add_event failed ! (%s)\n", strerror(errno));
         exit(1);
+    }
+
+    if (null != server_user_accept) {
+        server_user_accept(c);
+    } else {
+        printf("没有SERVER_USER_ACCEPT\n");
     }
 }
 

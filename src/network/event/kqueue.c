@@ -1,7 +1,8 @@
 #include "network/event/kqueue.h"
 
+//@TODO 解决删除事件时递增的问题
+
 static int kq = -1;
-static kevent_p  changes;
 static kevent_p  events;
 static int       nchanges=0, nevents=512;
 
@@ -32,11 +33,10 @@ kqueue_init() {
 
     //  事件列表
     events  = (kevent_p) malloc(nevents * sizeof(kevent_t));
-    changes = (kevent_p) malloc(nevents * sizeof(kevent_t));
 
     event_actions = event_module_kqueue.actions;
 
-    nchanges = 0;
+    nevents = 0;
     return success;
 }
 
@@ -91,7 +91,7 @@ kqueue_add_event(event_p ev, int event, int flags) {
     ev->disabled = 0;
     ev->index = nchanges;
 
-    nchanges++;
+    nevents++;
 
     ret = kqueue_ev_set(ev, event, EV_ADD | EV_ENABLE | flags);
     return ret;
@@ -104,6 +104,8 @@ kqueue_del_event(event_p ev, int event, int flags) {
     ev->active   = 0;
     ev->disabled = 1;
 
+    nevents--;
+
     ret = kqueue_ev_set(ev, event, EV_DELETE | EV_DISABLE | flags);
     return ret;
 }
@@ -111,18 +113,17 @@ kqueue_del_event(event_p ev, int event, int flags) {
 int
 kqueue_ev_set(event_t *ev, int filter, int flags) {
     connection_p   c;
-    kevent_p       ke;
+    kevent_t       ke[1];
     c = (connection_p) ev->data;
 
-    ke = changes + (nchanges-1);
-    ke->ident  = c->fd;
-    ke->filter = filter;
-    ke->flags  = flags;
-    ke->fflags = 0;
-    ke->data   = 0;
-    ke->udata  = ev;
+    ke[0].ident  = c->fd;
+    ke[0].filter = filter;
+    ke[0].flags  = flags;
+    ke[0].fflags = 0;
+    ke[0].data   = 0;
+    ke[0].udata  = ev;
 
-    if (-1 == (kevent(kq, changes, nchanges, NULL, 0, NULL))) {
+    if (-1 == (kevent(kq, ke, 1, NULL, 0, NULL))) {
         printf("kevent() failed!(%s)\n", strerror(errno));
         exit(1);
         return failed;
