@@ -75,8 +75,6 @@ int server_tcp_create(server_p server) {
         printf("kqueue_add_event failed ! (%s)\n", strerror(errno));
         exit(1);
     }
-
-    printf("server create success!\n");
     return success;
 }
 
@@ -111,8 +109,8 @@ void server_tcp_accept(event_p ev) {
 
     //  设置connection
     c->listening = ls;
-    c->read  = malloc(sizeof(event_t));
-    c->write = malloc(sizeof(event_t));
+    c->read  = mmalloc(sizeof(event_t));
+    c->write = mmalloc(sizeof(event_t));
 
     read = c->read;
     read->data    = c;
@@ -138,15 +136,7 @@ void server_tcp_read(event_p ev) {
     int          n;
     c = (connection_p) ev->data;
 
-    char buff[1024];
-    memset(buff, 0, 1024);
-
-    if (-1 == (n = read(c->fd, buff, 1024))) {
-        printf("read failed!(%s)\n", strerror(errno));
-        exit(1);
-    }
-
-    if (n == 0) {
+    if (ev->size == 0) {
         if (-1 == close(c->fd)) {
             printf("close failed\n");
         }
@@ -159,7 +149,7 @@ void server_tcp_read(event_p ev) {
 
     } else {
         if (null != server_user_read) {
-            server_user_read(c);
+            server_user_read(c, ev->size);
         } else {
             printf("没有SERVER_USER_READ\n");
         }

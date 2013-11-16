@@ -26,14 +26,16 @@ ws.prototype.set      = function(object) {
 	this.id = '#'+object.id;  //  信息输出ID
 }
 
-ws.prototype._open    = function(evt) { }
+ws.prototype._open    = function(evt) {
+	console.log('true');
+}
 ws.prototype._close   = function(evt) { }
 ws.prototype._error   = function(evt) {
 	var id = this.data.id;
 	if (null != id) {
-		$(id).html('Error occured: ' + event.data); 
+		$(id).html('Error Occured: ' + event.data); 
 	} else {
-		console.log('Error occured: ' + event.data);
+		console.log('Error Occured: ' + event.data);
 	}
 }
 

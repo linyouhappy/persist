@@ -1,6 +1,6 @@
 #include "demo/hash.h"
 
-void hash_demo_test(void) {
+void hash_demo_example(void) {
     hash_init_t  hinit;
     array_t      array;
     int          i, c;

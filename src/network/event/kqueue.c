@@ -64,6 +64,8 @@ kqueue_process_events(){
             ev = (event_p)  ke->udata;
             cn = (connection_p) ev->data;
 
+            ev->size = n;
+
             switch(ke->filter) {
             case EVFILT_READ:
                 re = (event_p) cn->read;

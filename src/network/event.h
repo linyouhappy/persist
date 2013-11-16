@@ -32,6 +32,7 @@ typedef event_actions_t *               event_actions_p;
 struct event_s {
     int                                 index;
     void                               *data;
+    uint                                size;
 
     unsigned                            write:1;
 

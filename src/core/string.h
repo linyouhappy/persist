@@ -42,14 +42,21 @@ struct keyval_s {
     (str)->data = NULL
 
 
-#define tolower(c)      (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
-#define toupper(c)      (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+#define tolower(c)                          (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
+#define toupper(c)                          (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+
+#define mstrcmp(s1, s2)                     strcmp((const char *) s1, (const char *) s2)
+#define mstrncmp(s1, s2, n)                 strncmp((const char *) s1, (const char *) s2, n)
+//@TODO
+#define mstrstr(s1, s2)                     strstr((const char *) s1, (const char *) s2)
+#define mstrlen(s)                          strlen((const char *) s)
+#define mstrchr(s1, c)                      strchr((const char *) s1, (int) c)
 
 //  字节对齐
-#define align(d, a)     (((d) + (a - 1)) & ~(a - 1))
-#define align_ptr(p, a)                                                   \
-    (u_char *) (((uintptr_t) (p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
+#define align(d, a)                         (((d) + (a - 1)) & ~(a - 1))
+#define align_ptr(p, a)                     (u_char *) (((uintptr_t) (p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
 
+//  字符串
 void strlow(u_char *dst, u_char *src, size_t n);
 
 //  内存

@@ -14,7 +14,7 @@ typedef server_event_t *                server_event_p;
 #include "network/network.h"
 
 typedef void (*server_accept_pt)(connection_p);
-typedef void (*server_read_pt)(connection_p);
+typedef void (*server_read_pt)(connection_p, uint);
 typedef void (*server_close_pt)(connection_p);
 
 

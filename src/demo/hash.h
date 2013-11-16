@@ -3,5 +3,5 @@
 
 #include "demo/demo.h"
 
-void hash_demo_test(void);
+void hash_demo_example(void);
 #endif

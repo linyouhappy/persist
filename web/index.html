@@ -21,9 +21,9 @@
 			<div class="col-lg-4">
 				<div class="input-group  input-group-sm">
 					<span class="input-group-addon">WS://</span>
-					<input type="text" class="form-control" />
+					<input id="input-address" type="text" class="form-control" value="127.0.0.1:57717" />
 					<span class="input-group-btn">
-						<button class="btn btn-default" type="button">Connect!</button>
+						<button id="btn-connect" class="btn btn-default" type="button">Connect!</button>
 					</span>
 				</div>
 			</div>
@@ -33,17 +33,21 @@
 		<hr>
 	</div>
 <!-- Latest compiled and minified JavaScript -->
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 <script src="/js/persist.js"></script>
 <script>
-    $ws = new ws('127.0.0.1:12345');
-    $ws.set({
-    	'id' : 'message'
-    })
-    
-    $ws.connect();
+$(document).ready(function(){
+	var $ws = null
+	$('#btn-connect').click(function(){
+	    $ws = new ws($('#input-address').val());
+	    $ws.set({
+	    	'id' : 'message'
+	    })
+	    $ws.connect();
+	})
+})
 </script>
 </body>
 </html>
