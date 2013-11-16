@@ -5,6 +5,8 @@ static void server_demo_accept(connection_p conn) {
 }
 
 static void server_demo_read(connection_p conn) {
+    int fd, i;
+    fd = conn->fd;
     printf("[user]%d:read\n", conn->fd);
 }
 
