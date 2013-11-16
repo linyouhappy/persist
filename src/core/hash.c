@@ -225,7 +225,7 @@ found:
         elt->value = names[n].value;
         elt->len   = (u_short) names[n].key.len;
 
-        strlow(elt->name, names[n].key.data, names[n].key.len);
+        strnlow(elt->name, names[n].key.data, names[n].key.len);
 
         //  记录已使用大小 (字节对齐后的大小)
         test[key] = (u_short) (test[key] + HASH_ELT_SIZE(&names[n]));

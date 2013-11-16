@@ -16,8 +16,12 @@
 //}
 
 int main(const int argc, const char ** argv) {
+    //  example
 //    server_demo_example();
-    hash_demo_example();
+//    hash_demo_example();
+    string_demo_strstr();
+
+    //  test
 //    char * string = "aaaa\n\rbbbb\n\r";
 //
 //    char * p;

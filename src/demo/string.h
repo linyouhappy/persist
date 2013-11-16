@@ -4,5 +4,7 @@
 #include "demo/demo.h"
 
 void string_demo_low(void);
+void string_demo_strstr(void);
+void string_demo_base64(void);
 
 #endif
