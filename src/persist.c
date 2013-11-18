@@ -1,32 +1,46 @@
 #include "persist.h"
+#include <openssl/sha.h>
 
-//static void * my_process(void * args, thread_worker_p worker) {
-//    printf("worder(%d):task(%d)\n", worker->id, worker->task->id);
-//    sleep(2);
-//    return worker;
-//}
+//char * readline(char * string, char ** end) {
+//    char * start;
+//    char * p;
 //
-//// thread_pool_demo
-//static void thread_pool_demo() {
-//    thread_pool_p pool;
-//    pool = thread_pool_create(null);
-//    thread_task_add(pool, my_process, NULL);
-//    thread_pool_destroy(pool);
+//    start = p = string;
+//
+//    while(*p != '\n') {
+//        p++;
+//    }
+//
+//    *end = p;
+//
+//    return start;
 //}
 
-void process(connection_p connection) {
-    printf("client:%d  !\n", connection->fd);
-}
+int main(const int argc, const char ** argv) {
+    //  example
+    server_demo_example();
+//    hash_demo_example();
+//    string_demo_strstr();
 
-int main(void) {
-    listening_p  listen;
-    listen = server_tcp_create(16622, null);
+    //  test
 
-    listen->process = process;
+//    printf("\"%s\"\n", up);
 
-    server_tcp_process(listen);
+//    string_t k;
+//    k.data = mmalloc(base64_encoded_length(sha.len));
+//    base64_encode(&k, &sha);
+//    printf("%s\n", k.data);
 
-    printf("success\n");
-
-    return EXIT_SUCCESS;
+//    char * string = "aaaa\n\rbbbb\n\r";
+//
+//    char * p;
+//    char * end;
+//
+//    p = readline(string, &end);
+//
+//    printf("%p\n", end);
+//    printf("%p\n", p);
+//
+//    printf("%ld\n", end-p);
+    return success;
 }

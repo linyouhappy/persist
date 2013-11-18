@@ -1,7 +1,7 @@
-#ifndef H_QUEUE_INCLUDED
-#define H_QUEUE_INCLUDED
+#ifndef H_CORE_QUEUE_INCLUDED
+#define H_CORE_QUEUE_INCLUDED
 
-#include "persist.h"
+#include "core/core.h"
 
 typedef struct queue_s              queue_t;
 typedef queue_t *                   queue_p;

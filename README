@@ -1,3 +1,21 @@
-README
+/src		C源码
 -------------------------------------
-just for testing...
+/core		基础结构
+					| 依赖关系			|
+	string			|
+	array			|
+	hash			| string core		|
+	queue			|					|
+	mpm				|					|  memory pool manage
+/network	网络编程
+
+	event			| core				|
+	server			| core event		|
+
+-------------------------------------
+/web		WEB目录(WSD: WebSocket Demo)
+-------------------------------------
+	bootstrap
+	jquery
+	js
+	index.html

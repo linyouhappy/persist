@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Persist Web Socket Demo</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+</head>
+<body>
+	<div class="container">
+		<div class="page-header">
+			<h1>Persist Web Socket Demo</h1>
+			<p class="lead"></p>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="alert alert-danger" id="message"></div>
+			</div>
+			<div class="col-lg-4">
+				<div class="input-group  input-group-sm">
+					<span class="input-group-addon">WS://</span>
+					<input id="input-address" type="text" class="form-control" value="127.0.0.1:57717" />
+					<span class="input-group-btn">
+						<button id="btn-connect" class="btn btn-default" type="button">Connect!</button>
+						<button id="btn-close"   class="btn btn-default hide" type="button">Close!</button>
+					</span>
+				</div>
+			</div>
+			<div class="col-lg-8">
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-lg-4">
+				<div class="input-group  input-group-sm">
+					<span class="input-group-addon">Message:</span>
+					<input id="input-message" type="text" class="form-control" value="" />
+					<span class="input-group-btn">
+						<button id="btn-send" class="btn btn-default" type="button">Send!</button>
+					</span>
+				</div>
+			</div>
+			<div class="col-lg-8">
+			</div>
+		</div>
+	</div>
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<script src="/js/persist.js"></script>
+<script>
+$(document).ready(function(){
+	var $ws = null
+	$('#btn-connect').click(function(){
+		$ws = new ws($('#input-address').val());
+		$ws.set({
+			'id' : 'message',
+			'open' : function(){
+				$('#btn-close').removeClass('hide').show().attr('disabled',false);
+				$('#btn-connect').hide().attr('disabled',true);
+			},
+			'close' : function() {
+				$('#btn-close').addClass('hide').hide().attr('disabled', true);
+				$('#btn-connect').show().attr('disabled',false);
+			}
+		})
+		$ws.connect();
+	})
+	
+	$('#btn-close').click(function(){
+		if (null != $ws) {
+			$ws.close();
+			$ws = null;
+		}
+	})
+	
+	$('#btn-send').click(function(){
+		if ($ws) {
+			var val = $('#input-message').val();
+			$ws.send(val);
+		} else {
+			console.log('未连接, 不能发送!');
+		}
+	})
+})
+</script>
+</body>
+</html>
