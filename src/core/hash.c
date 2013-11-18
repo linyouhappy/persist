@@ -19,7 +19,7 @@ int hash_key_lc(u_char *data, size_t len) {
     key = 0;
 
     for (i = 0; i < len; i++) {
-        key = hash(key, tolower(data[i]));
+        key = hash(key, strclow(data[i]));
     }
 
     return key;

@@ -21,7 +21,7 @@ keyval_t http_ws_response[] = {
     keyval_null,
 };
 
-string_p http_ws_k2k(u_char * key, size_t len) {
+string_p http_ws_k2a(u_char * key, size_t len) {
     string_t sha;
     string_p ret;
     u_char   *p;
@@ -41,5 +41,42 @@ string_p http_ws_k2k(u_char * key, size_t len) {
     //@TODO  p 是否需要销毁
 //    free(p);
     return ret;
+}
+
+uint http_ws_parse(http_ws_frame_p frame, u_char * buff) {
+    uint     i, offset;
+    u_char * p, mask[4];
+
+    p = buff;
+
+    //  1 BYTE
+    frame->fin  = (*p & 0x80) >> 7;
+    frame->rsv1 = 0;
+    frame->rsv2 = 0;
+    frame->rsv3 = 0;
+    frame->opcode = (*p & 0x0F);
+    //  2 BYTE
+    frame->mask         = (*(p+1) & 0x80)>>7;
+    frame->payload_len  = *(p+1) & 0x7F;
+
+    if (frame->mask) {
+        mask[0] = *(p+2);
+        mask[1] = *(p+3);
+        mask[2] = *(p+4);
+        mask[3] = *(p+5);
+    }
+
+    offset = 6;
+    for(i=0; i<frame->payload_len; i++) {
+        buff[offset] = *(p+offset) ^ mask[(i%4)];
+        offset++;
+    }
+
+    frame->payload_data = buff+offset-frame->payload_len;
+
+#if 0
+    printf("opcode:%x\n", frame->opcode);
+#endif
+    return success;
 }
 

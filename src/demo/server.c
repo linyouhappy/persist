@@ -34,7 +34,22 @@ static void server_demo_read(event_p ev) {
         exit(1);
     }
 
-    printf("(read)%s\n", buff);
+    http_ws_frame_t frame;
+    http_ws_parse(&frame ,buff);
+
+
+    switch(frame.opcode) {
+    case NTWS_OPCODE_TEXT:
+        printf("(%d:read):%s\n", fd, frame.payload_data);
+        break;
+    case 8:
+        printf("(%d:ws close !)\n", fd);
+        close(fd);
+        break;
+    default:
+        printf("default:opcode:%d\n", frame.opcode);
+        break;
+    }
 }
 
 static void server_demo_auth(event_p ev) {
@@ -80,7 +95,7 @@ static void server_demo_auth(event_p ev) {
 
 //    printf("(%ld)%s\n", skey.len, skey.data);
 
-    akey = http_ws_k2k(skey.data, skey.len);
+    akey = http_ws_k2a(skey.data, skey.len);
 
 /// #############
     http_get_request_body(&body, buff);
@@ -99,22 +114,22 @@ static void server_demo_auth(event_p ev) {
             continue;
         }
         write(fd, SVAL(http_ws_response[i].key), SLEN(http_ws_response[i].key));
-        printf("%s", SVAL(http_ws_response[i].key));
+//        printf("%s", SVAL(http_ws_response[i].key));
 
         //  写入ACCEPT KEY
         switch(SLEN(http_ws_response[i].key)) {
         case 21:
             if (0 == mstrncmp(SVAL(http_ws_response[i].key), "Sec-WebSocket-Accept:", 21)) {
                 write(fd, akey->data, akey->len);
-                printf("%s", akey->data);
+//                printf("%s", akey->data);
             }
             break;
         }
         if (SVAL(http_ws_response[i].value)) {
             write(fd, SVAL(http_ws_response[i].value), SLEN(http_ws_response[i].value));
-            printf("%s", SVAL(http_ws_response[i].value));
+//            printf("%s", SVAL(http_ws_response[i].value));
         }
-        printf("\n");
+//        printf("\n");
         write(fd, "\r\n", 2);
     }
     write(fd, "\r\n", 2);
