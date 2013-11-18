@@ -8,7 +8,10 @@ typedef http_ws_frame_t *               http_ws_frame_p;
 #include <openssl/sha.h>
 
 #define NTWS_OPCODE_TEXT                1   //  文本
+#define NTWS_OPCODE_BLOB                2   //  二进制
 #define NTWS_OPCODE_CLOSE               8   //  关闭
+#define NTWS_OPCODE_PING                9   //  PING
+#define NTWS_OPCODE_PONG                A   //  PONG
 
 struct http_ws_frame_s {
     //  1 BYTE

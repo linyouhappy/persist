@@ -17,6 +17,11 @@
 //}
 
 int main(const int argc, const char ** argv) {
+
+//    string_p ret;
+
+//    ret = http_ws_k2a("0Yv7YF+OU2pbWSkUm47Msw==", sizeof("0Yv7YF+OU2pbWSkUm47Msw=="));
+//
     //  example
     server_demo_example();
 //    hash_demo_example();

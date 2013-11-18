@@ -47,7 +47,10 @@ static void server_demo_read(event_p ev) {
         close(fd);
         break;
     default:
+        //  有时会出现异常情况
         printf("default:opcode:%d\n", frame.opcode);
+        sleep(10);
+        exit(1);
         break;
     }
 }
@@ -69,6 +72,8 @@ static void server_demo_auth(event_p ev) {
         printf("read failed!(%s)\n", strerror(errno));
         exit(1);
     }
+
+//    printf("%s\n", buff);
 
     http_get_request_header(&header, buff);
 //  获取KEY
@@ -96,6 +101,8 @@ static void server_demo_auth(event_p ev) {
 //    printf("(%ld)%s\n", skey.len, skey.data);
 
     akey = http_ws_k2a(skey.data, skey.len);
+
+//    printf("akey:%s\n", akey->data);
 
 /// #############
     http_get_request_body(&body, buff);
