@@ -12,9 +12,11 @@ typedef struct server_event_s           server_event_t;
 typedef server_event_t *                server_event_p;
 
 #include "network/network.h"
+#include "network/http.h"
+#include "network/http/ws.h"
 
 typedef void (*server_accept_pt)(connection_p);
-typedef void (*server_read_pt)(connection_p, uint);
+typedef void (*server_read_pt)(event_p);
 typedef void (*server_close_pt)(connection_p);
 
 

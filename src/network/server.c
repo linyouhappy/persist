@@ -149,7 +149,7 @@ void server_tcp_read(event_p ev) {
 
     } else {
         if (null != server_user_read) {
-            server_user_read(c, ev->size);
+            server_user_read(ev);
         } else {
             printf("没有SERVER_USER_READ\n");
         }

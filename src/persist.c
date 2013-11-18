@@ -1,4 +1,5 @@
 #include "persist.h"
+#include <openssl/sha.h>
 
 //char * readline(char * string, char ** end) {
 //    char * start;
@@ -17,11 +18,19 @@
 
 int main(const int argc, const char ** argv) {
     //  example
-//    server_demo_example();
+    server_demo_example();
 //    hash_demo_example();
-    string_demo_strstr();
+//    string_demo_strstr();
 
     //  test
+
+//    printf("\"%s\"\n", up);
+
+//    string_t k;
+//    k.data = mmalloc(base64_encoded_length(sha.len));
+//    base64_encode(&k, &sha);
+//    printf("%s\n", k.data);
+
 //    char * string = "aaaa\n\rbbbb\n\r";
 //
 //    char * p;

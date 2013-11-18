@@ -24,6 +24,8 @@
 					<input id="input-address" type="text" class="form-control" value="127.0.0.1:57717" />
 					<span class="input-group-btn">
 						<button id="btn-connect" class="btn btn-default" type="button">Connect!</button>
+						<button id="btn-send" class="btn btn-default" type="button">Send!</button>
+						<button id="btn-close"   class="btn btn-default" type="button">Close!</button>
 					</span>
 				</div>
 			</div>
@@ -46,6 +48,17 @@ $(document).ready(function(){
 	    	'id' : 'message'
 	    })
 	    $ws.connect();
+	})
+	
+	$('#btn-close').click(function(){
+		if (null != $ws) {
+			$ws.close();
+			$ws = null;
+		}
+	})
+	
+	$('#btn-send').click(function(){
+		$ws.send();
 	})
 })
 </script>

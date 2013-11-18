@@ -56,6 +56,7 @@ struct keyval_s {
 #define mstrlen(s)                              strlen((const char *) s)
 //  字符搜索
 #define mstrchr(s1, c)                          (u_char *) strchr((const char *) s1, (int) c)
+#define mstrrchr(s1, c)                         (u_char *) strrchr((const char *) s1, (int) c)
 
 //  字节对齐
 #define align(d, a)                             (((d) + (a - 1)) & ~(a - 1))
@@ -64,6 +65,8 @@ struct keyval_s {
 //  字符串大小写转换
 void strnlow(u_char *dst, u_char *src, size_t n);
 void strnupp(u_char *dst, u_char *src, size_t n);
+
+//  数字转字符串
 
 //  @TODO 补strnstr
 

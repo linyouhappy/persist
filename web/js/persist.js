@@ -22,12 +22,22 @@ ws.prototype.connect  = function() {
 	this.ws.onmessage = this._message;
 }
 
+ws.prototype.close = function() {
+	console.log(this.ws);
+	this.ws.close();
+}
+
+ws.prototype.send = function() {
+	this.ws.send("123456");
+}
+
 ws.prototype.set      = function(object) {
 	this.id = '#'+object.id;  //  信息输出ID
 }
 
 ws.prototype._open    = function(evt) {
-	console.log('true');
+	var id = this.data.id;
+	$(id).html("连接成功"); 
 }
 ws.prototype._close   = function(evt) { }
 ws.prototype._error   = function(evt) {
