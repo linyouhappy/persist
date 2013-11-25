@@ -28,15 +28,24 @@ string_p http_ws_k2a(u_char * key, size_t len) {
 
     ret = mmalloc(sizeof(string_t));
 
+//    printf("key(%ld):%s\n", len, key);
+
     p = SHA1(key, len, null);
 
-    sha.len = mstrlen(p);
+    //  OLD
+//    sha.len = mstrlen(p);
+//    sha.data = p;
+    //  NEW
+    sha.len = 20;   // @TODO  mstrlen(p) 有时候P长度不是20  SHA1输入为60位，人工写死
     sha.data = p;
+
+//    printf("sha(%ld):%s\n", sha.len, sha.data);
 
     ret->len  = base64_encoded_length(sha.len);
     ret->data = mmalloc(ret->len);
 
     base64_encode(ret, &sha);
+//    printf("ret(%ld):%s\n", ret->len, ret->data);
 
     //@TODO  p 是否需要销毁
 //    free(p);
@@ -75,7 +84,11 @@ uint http_ws_parse(http_ws_frame_p frame, u_char * buff) {
     frame->payload_data = buff+offset-frame->payload_len;
 
 #if 0
+    printf("=======\n");
+    printf("fin:%x\n", frame->fin);
+    printf("payload_len:%d\n", frame->payload_len);
     printf("opcode:%x\n", frame->opcode);
+    printf("=======\n");
 #endif
     return success;
 }
